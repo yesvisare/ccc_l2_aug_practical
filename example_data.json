@@ -1,0 +1,112 @@
+{
+  "users": [
+    {
+      "username": "alice_admin",
+      "email": "alice@example.com",
+      "api_key": "admin_key_abc123",
+      "roles": ["admin"]
+    },
+    {
+      "username": "bob_editor",
+      "email": "bob@example.com",
+      "api_key": "editor_key_def456",
+      "roles": ["editor"]
+    },
+    {
+      "username": "charlie_viewer",
+      "email": "charlie@example.com",
+      "api_key": "viewer_key_ghi789",
+      "roles": ["viewer"]
+    },
+    {
+      "username": "diana_multi",
+      "email": "diana@example.com",
+      "api_key": "multi_key_jkl012",
+      "roles": ["editor", "viewer"]
+    }
+  ],
+  "documents": [
+    {
+      "id": "doc_001",
+      "title": "Company Handbook",
+      "content": "Welcome to our company! This handbook contains general information...",
+      "access_level": "public",
+      "metadata": {
+        "category": "HR",
+        "created_at": "2024-01-15"
+      }
+    },
+    {
+      "id": "doc_002",
+      "title": "Q4 Sales Strategy",
+      "content": "Internal strategy document for Q4 sales targets and initiatives...",
+      "access_level": "internal",
+      "metadata": {
+        "category": "Sales",
+        "created_at": "2024-02-20"
+      }
+    },
+    {
+      "id": "doc_003",
+      "title": "Executive Compensation Plan",
+      "content": "Confidential compensation structure for C-level executives...",
+      "access_level": "confidential",
+      "metadata": {
+        "category": "Finance",
+        "created_at": "2024-03-10"
+      }
+    },
+    {
+      "id": "doc_004",
+      "title": "Engineering Blog Post Guidelines",
+      "content": "Guidelines for writing and publishing technical blog posts...",
+      "access_level": "public",
+      "metadata": {
+        "category": "Engineering",
+        "created_at": "2024-01-05"
+      }
+    },
+    {
+      "id": "doc_005",
+      "title": "Product Roadmap 2024",
+      "content": "Internal product roadmap with upcoming features and timelines...",
+      "access_level": "internal",
+      "metadata": {
+        "category": "Product",
+        "created_at": "2024-01-30"
+      }
+    }
+  ],
+  "permission_scenarios": [
+    {
+      "scenario": "Viewer accessing public document",
+      "user": "charlie_viewer",
+      "document": "doc_001",
+      "expected_access": true
+    },
+    {
+      "scenario": "Viewer accessing internal document",
+      "user": "charlie_viewer",
+      "document": "doc_002",
+      "expected_access": false
+    },
+    {
+      "scenario": "Editor accessing internal document",
+      "user": "bob_editor",
+      "document": "doc_002",
+      "expected_access": true
+    },
+    {
+      "scenario": "Editor accessing confidential document",
+      "user": "bob_editor",
+      "document": "doc_003",
+      "expected_access": false
+    },
+    {
+      "scenario": "Admin accessing confidential document",
+      "user": "alice_admin",
+      "document": "doc_003",
+      "expected_access": true
+    }
+  ]
+}
