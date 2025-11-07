@@ -1,0 +1,45 @@
+Employee Record - CONFIDENTIAL
+
+Name: John Michael Smith
+SSN: 123-45-6789
+Date of Birth: 1985-03-15
+Email: john.smith@techcorp.com
+Phone: (555) 123-4567
+Employee ID: EMP-2024-001
+
+Address: 742 Evergreen Terrace, Springfield, IL 62704
+
+Emergency Contact:
+Name: Jane Smith
+Phone: 555-987-6543
+Relationship: Spouse
+
+Financial Information:
+Bank Account: 123456789012
+Credit Card: 4532-1234-5678-9010
+Salary: $95,000 annually
+
+Medical Information:
+Insurance Provider: Blue Cross Blue Shield
+Policy Number: MED-9876543
+Doctor: Dr. Sarah Johnson, MD
+Medical License: ML123456
+
+Recent Activity:
+- Accessed system from IP: 192.168.1.100
+- Login timestamp: 2024-01-15 14:32:01
+- Document uploaded: employee_contract_2024.pdf
+
+Notes:
+This record contains multiple PII types for testing detection accuracy.
+Some intentional variations:
+- SSN with dashes: 123-45-6789
+- SSN without dashes: 123456789
+- Phone with parentheses: (555) 123-4567
+- Phone without formatting: 5551234567
+- Spelled out number: one two three four five six seven eight nine
+
+Test cases for edge scenarios:
+- Email in code: test@example.com (should be whitelisted)
+- Generic placeholder: XXX-XX-XXXX (already redacted)
+- International format: +44 20 7946 0958 (UK number)
