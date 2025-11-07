@@ -1,0 +1,186 @@
+{
+  "sample_queries": [
+    {
+      "id": 1,
+      "question": "What are GDPR compliance requirements for data retention?",
+      "expected_trace_stages": ["pinecone.retrieve", "reranking.process", "llm.generate"],
+      "expected_latency_range_ms": [1000, 1500],
+      "use_case": "Normal query demonstrating full RAG pipeline tracing"
+    },
+    {
+      "id": 2,
+      "question": "Explain HIPAA security rules for healthcare data encryption.",
+      "expected_trace_stages": ["pinecone.retrieve", "reranking.process", "llm.generate"],
+      "expected_latency_range_ms": [1000, 1500],
+      "use_case": "Healthcare compliance query"
+    },
+    {
+      "id": 3,
+      "question": "What are SOC 2 Type II audit requirements for access controls?",
+      "expected_trace_stages": ["pinecone.retrieve", "reranking.process", "llm.generate"],
+      "expected_latency_range_ms": [1000, 1500],
+      "use_case": "Security audit query"
+    },
+    {
+      "id": 4,
+      "question": "PCI DSS requirements for credit card data storage and transmission.",
+      "expected_trace_stages": ["pinecone.retrieve", "reranking.process", "llm.generate"],
+      "expected_latency_range_ms": [1000, 1500],
+      "use_case": "Payment security query"
+    },
+    {
+      "id": 5,
+      "question": "ISO 27001 information security management system requirements.",
+      "expected_trace_stages": ["pinecone.retrieve", "reranking.process", "llm.generate"],
+      "expected_latency_range_ms": [1000, 1500],
+      "use_case": "ISO compliance query"
+    }
+  ],
+  "trace_examples": {
+    "normal_trace": {
+      "description": "Example of healthy trace with expected timing",
+      "total_duration_ms": 1200,
+      "stages": {
+        "pinecone.retrieve": {
+          "duration_ms": 200,
+          "substages": {
+            "embedding.generate": 50,
+            "pinecone.query": 150
+          },
+          "attributes": {
+            "question": "What are GDPR compliance requirements...",
+            "top_k": 10,
+            "results.count": 10,
+            "db.system": "pinecone"
+          }
+        },
+        "reranking.process": {
+          "duration_ms": 200,
+          "attributes": {
+            "input_count": 10,
+            "output_count": 5,
+            "model": "cohere-rerank-v3",
+            "api.status_code": 200
+          }
+        },
+        "llm.generate": {
+          "duration_ms": 800,
+          "attributes": {
+            "model": "gpt-4",
+            "llm.prompt_tokens": 2500,
+            "llm.completion_tokens": 150,
+            "llm.total_tokens": 2650,
+            "llm.cost_usd": 0.000084
+          }
+        }
+      }
+    },
+    "slow_trace_example": {
+      "description": "Example trace demonstrating how to identify bottleneck",
+      "total_duration_ms": 4200,
+      "bottleneck": "llm.generate",
+      "stages": {
+        "pinecone.retrieve": {
+          "duration_ms": 200,
+          "status": "normal"
+        },
+        "reranking.process": {
+          "duration_ms": 200,
+          "status": "normal"
+        },
+        "llm.generate": {
+          "duration_ms": 3800,
+          "status": "slow - indicates LLM timeout or large context",
+          "attributes": {
+            "model": "gpt-4",
+            "llm.prompt_tokens": 15000,
+            "llm.completion_tokens": 800
+          }
+        }
+      },
+      "debugging_notes": [
+        "Total 4200ms matches user complaint of 4.2-second query",
+        "Trace shows LLM generation taking 3800ms (90% of time)",
+        "Large prompt_tokens (15K) indicates too much context",
+        "Solution: Reduce context docs or switch to faster model"
+      ]
+    }
+  },
+  "failure_scenarios": {
+    "missing_context_propagation": {
+      "description": "Threading without context propagation creates orphaned spans",
+      "symptom": "Two separate traces instead of one connected trace",
+      "fix": "Use opentelemetry.context.attach() when creating threads"
+    },
+    "high_overhead": {
+      "description": "100% sampling with fine-grained spans adds 10-20% latency",
+      "symptom": "P95 latency jumps from 850ms to 1020ms",
+      "fix": "Reduce sampling to 10%, use coarser spans, BatchSpanProcessor"
+    },
+    "storage_overflow": {
+      "description": "Jaeger storage fills after 30 days without cleanup",
+      "symptom": "Jaeger UI queries take 30+ seconds, OOM errors",
+      "fix": "Set BADGER_TTL=168h, use Elasticsearch for >10K traces/day"
+    },
+    "incomplete_instrumentation": {
+      "description": "Missing spans for HTTP client library",
+      "symptom": "Total time (1200ms) > sum of spans (780ms), 420ms missing",
+      "fix": "Install opentelemetry-instrumentation-httpx or add manual spans"
+    }
+  },
+  "sampling_recommendations": {
+    "development": {
+      "sampling_rate": 1.0,
+      "retention_days": 3,
+      "rationale": "Trace everything for debugging, short retention to save disk"
+    },
+    "staging": {
+      "sampling_rate": 0.5,
+      "retention_days": 7,
+      "rationale": "Balance visibility and cost, 1 week for issue investigation"
+    },
+    "production": {
+      "sampling_rate": 0.1,
+      "retention_days": 30,
+      "rationale": "10% sampling reduces overhead from 15ms to 1.5ms, 30 days for compliance"
+    }
+  },
+  "cost_estimates": {
+    "traffic_2400_per_day": {
+      "traces_per_day": 2400,
+      "overhead_per_hour_ms": 1200,
+      "storage_7_days_mb": 400,
+      "monthly_cost_usd": 0,
+      "notes": "Free tier, self-hosted Jaeger sufficient"
+    },
+    "traffic_24000_per_day": {
+      "traces_per_day": 24000,
+      "overhead_per_hour_ms": 120000,
+      "storage_7_days_mb": 4000,
+      "monthly_cost_usd": 50,
+      "notes": "Need Elasticsearch backend, reduce sampling to 20%"
+    },
+    "traffic_240000_per_day": {
+      "traces_per_day": 240000,
+      "overhead_per_day_ms": 240000,
+      "storage_30_days_gb": 36,
+      "monthly_cost_usd": 500,
+      "notes": "Switch to Tempo + S3 or managed APM (Datadog: $1000-2000/mo)"
+    }
+  },
+  "jaeger_setup": {
+    "docker_command": "docker run -d --name jaeger -e COLLECTOR_OTLP_ENABLED=true -p 16686:16686 -p 4317:4317 -p 4318:4318 jaegertracing/all-in-one:1.51",
+    "ports": {
+      "16686": "Jaeger UI",
+      "4317": "OTLP gRPC collector",
+      "4318": "OTLP HTTP collector"
+    },
+    "ui_url": "http://localhost:16686",
+    "production_config": {
+      "ttl_hours": 168,
+      "maintenance_interval_hours": 1,
+      "memory_limit_gb": 2,
+      "command": "docker run -d --name jaeger -e COLLECTOR_OTLP_ENABLED=true -e BADGER_TTL=168h -e BADGER_MAINTENANCE_INTERVAL=1h --memory=2g -p 16686:16686 -p 4317:4317 jaegertracing/all-in-one:1.51"
+    }
+  }
+}
