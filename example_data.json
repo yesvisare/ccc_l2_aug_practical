@@ -1,0 +1,129 @@
+{
+  "queries": [
+    {
+      "query_id": "q_001",
+      "query_text": "What are the health benefits of regular exercise?",
+      "response_text": "Regular exercise provides numerous health benefits including improved cardiovascular health, stronger muscles and bones, better mental health, and reduced risk of chronic diseases like diabetes and heart disease.",
+      "sources": ["health_guide_2024.pdf", "exercise_benefits.txt"],
+      "confidence": 0.89,
+      "has_negative_feedback": false,
+      "timestamp": "2024-01-15T10:30:00Z"
+    },
+    {
+      "query_id": "q_002",
+      "query_text": "How do I reset my password?",
+      "response_text": "You can reset your password by clicking the 'Forgot Password' link on the login page.",
+      "sources": ["user_manual.pdf"],
+      "confidence": 0.45,
+      "has_negative_feedback": true,
+      "timestamp": "2024-01-15T11:15:00Z"
+    },
+    {
+      "query_id": "q_003",
+      "query_text": "What is the company's remote work policy?",
+      "response_text": "Our company offers flexible remote work options. Employees can work from home up to 3 days per week, subject to manager approval. Core hours are 10 AM - 3 PM in your local timezone.",
+      "sources": ["hr_policies_2024.pdf", "remote_work_guidelines.txt"],
+      "confidence": 0.92,
+      "has_negative_feedback": false,
+      "timestamp": "2024-01-15T14:22:00Z"
+    },
+    {
+      "query_id": "q_004",
+      "query_text": "What are the system requirements for the software?",
+      "response_text": "The software is compatible with most systems.",
+      "sources": ["faq.txt"],
+      "confidence": 0.38,
+      "has_negative_feedback": true,
+      "timestamp": "2024-01-15T15:45:00Z"
+    },
+    {
+      "query_id": "q_005",
+      "query_text": "How is vacation time calculated?",
+      "response_text": "Vacation time accrues at a rate of 1.25 days per month for employees with 0-5 years of service, and 1.67 days per month for employees with 5+ years of service. Accrual begins on your first day of employment.",
+      "sources": ["benefits_handbook.pdf", "time_off_policy.pdf"],
+      "confidence": 0.87,
+      "has_negative_feedback": false,
+      "timestamp": "2024-01-15T16:10:00Z"
+    }
+  ],
+  "feedback": [
+    {
+      "feedback_id": "fb_001",
+      "query_id": "q_002",
+      "user_id": "user_456",
+      "feedback_type": "thumbs_down",
+      "rating": 2,
+      "comment": "Response was incomplete - didn't mention email verification step",
+      "timestamp": "2024-01-15T11:20:00Z"
+    },
+    {
+      "feedback_id": "fb_002",
+      "query_id": "q_001",
+      "user_id": "user_789",
+      "feedback_type": "thumbs_up",
+      "rating": 5,
+      "comment": "Very comprehensive answer!",
+      "timestamp": "2024-01-15T10:35:00Z"
+    },
+    {
+      "feedback_id": "fb_003",
+      "query_id": "q_004",
+      "user_id": "user_123",
+      "feedback_type": "thumbs_down",
+      "rating": 1,
+      "comment": "Too vague - I need specific OS versions and RAM requirements",
+      "timestamp": "2024-01-15T15:50:00Z"
+    }
+  ],
+  "annotations": [
+    {
+      "annotation_id": "ann_001",
+      "query_id": "q_001",
+      "annotator_id": "annotator_alice",
+      "factual_correctness": true,
+      "helpfulness": 5,
+      "source_attribution": true,
+      "needs_improvement": false,
+      "comments": "Excellent response with good coverage",
+      "timestamp": "2024-01-16T09:00:00Z"
+    },
+    {
+      "annotation_id": "ann_002",
+      "query_id": "q_001",
+      "annotator_id": "annotator_bob",
+      "factual_correctness": true,
+      "helpfulness": 4,
+      "source_attribution": true,
+      "needs_improvement": false,
+      "comments": "Good but could mention recommended frequency",
+      "timestamp": "2024-01-16T09:15:00Z"
+    },
+    {
+      "annotation_id": "ann_003",
+      "query_id": "q_002",
+      "annotator_id": "annotator_alice",
+      "factual_correctness": false,
+      "helpfulness": 2,
+      "source_attribution": false,
+      "needs_improvement": true,
+      "comments": "Missing email verification step - incomplete answer",
+      "timestamp": "2024-01-16T09:30:00Z"
+    },
+    {
+      "annotation_id": "ann_004",
+      "query_id": "q_002",
+      "annotator_id": "annotator_bob",
+      "factual_correctness": false,
+      "helpfulness": 2,
+      "source_attribution": false,
+      "needs_improvement": true,
+      "comments": "Too brief, needs more detail on the full process",
+      "timestamp": "2024-01-16T09:45:00Z"
+    }
+  ],
+  "metadata": {
+    "dataset_version": "1.0",
+    "created_date": "2024-01-15",
+    "description": "Sample dataset for HITL evaluation module demonstrating query-response pairs with varying quality, user feedback, and human annotations"
+  }
+}
