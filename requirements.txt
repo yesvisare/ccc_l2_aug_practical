@@ -1,0 +1,25 @@
+# Module 6.4: Compliance & Audit Logging - Dependencies
+
+# Core framework
+fastapi==0.104.1
+uvicorn==0.24.0
+pydantic==2.5.0
+
+# Elasticsearch for audit log storage
+elasticsearch==8.11.0
+
+# Environment and configuration
+python-dotenv==1.0.0
+
+# Async logging (optional, for advanced use)
+python-logstash-async==2.5.0
+
+# Cryptography for hashing and signatures
+cryptography==41.0.7
+
+# Optional monitoring
+prometheus-client==0.19.0
+
+# Testing
+pytest==7.4.3
+pytest-asyncio==0.21.1

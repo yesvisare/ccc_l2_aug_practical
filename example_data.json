@@ -1,0 +1,143 @@
+{
+  "sample_audit_events": [
+    {
+      "event_id": "evt_001",
+      "event_type": "user.login",
+      "timestamp": "2024-11-07T10:00:00Z",
+      "user_id": "user_alice",
+      "user_role": "analyst",
+      "session_id": "sess_abc123",
+      "ip_address": "192.168.1.100",
+      "resource_type": "authentication",
+      "resource_id": "auth_system",
+      "action": "login",
+      "outcome": "success",
+      "service_name": "rag-api",
+      "endpoint": "/api/auth/login",
+      "environment": "production",
+      "pii_accessed": false,
+      "data_classification": "internal"
+    },
+    {
+      "event_id": "evt_002",
+      "event_type": "document.query",
+      "timestamp": "2024-11-07T10:05:00Z",
+      "user_id": "user_alice",
+      "user_role": "analyst",
+      "session_id": "sess_abc123",
+      "ip_address": "192.168.1.100",
+      "resource_type": "document",
+      "resource_id": "doc_12345",
+      "action": "query",
+      "outcome": "success",
+      "service_name": "rag-api",
+      "endpoint": "/api/query",
+      "environment": "production",
+      "pii_accessed": false,
+      "data_classification": "confidential",
+      "metadata": {
+        "query_text": "financial report Q3",
+        "results_count": 5
+      }
+    },
+    {
+      "event_id": "evt_003",
+      "event_type": "pii.detected",
+      "timestamp": "2024-11-07T10:10:00Z",
+      "user_id": "system",
+      "user_role": "system",
+      "session_id": null,
+      "ip_address": null,
+      "resource_type": "document",
+      "resource_id": "doc_67890",
+      "action": "scan",
+      "outcome": "success",
+      "service_name": "pii-scanner",
+      "endpoint": null,
+      "environment": "production",
+      "pii_accessed": true,
+      "data_classification": "restricted",
+      "metadata": {
+        "pii_types": ["email", "phone"],
+        "confidence": 0.95
+      }
+    },
+    {
+      "event_id": "evt_004",
+      "event_type": "permission.denied",
+      "timestamp": "2024-11-07T10:15:00Z",
+      "user_id": "user_bob",
+      "user_role": "viewer",
+      "session_id": "sess_xyz789",
+      "ip_address": "192.168.1.101",
+      "resource_type": "document",
+      "resource_id": "doc_12345",
+      "action": "access",
+      "outcome": "failure",
+      "service_name": "rag-api",
+      "endpoint": "/api/documents/doc_12345",
+      "environment": "production",
+      "pii_accessed": false,
+      "data_classification": "confidential",
+      "error_message": "Insufficient permissions: viewer cannot access confidential documents",
+      "metadata": {
+        "required_role": "analyst",
+        "user_role": "viewer"
+      }
+    },
+    {
+      "event_id": "evt_005",
+      "event_type": "data.export",
+      "timestamp": "2024-11-07T10:20:00Z",
+      "user_id": "user_alice",
+      "user_role": "analyst",
+      "session_id": "sess_abc123",
+      "ip_address": "192.168.1.100",
+      "resource_type": "user_data",
+      "resource_id": "user_alice",
+      "action": "export",
+      "outcome": "success",
+      "service_name": "gdpr-compliance",
+      "endpoint": "/api/gdpr/export",
+      "environment": "production",
+      "pii_accessed": true,
+      "data_classification": "restricted",
+      "metadata": {
+        "request_type": "gdpr_data_portability",
+        "events_exported": 247
+      }
+    }
+  ],
+  "gdpr_scenarios": {
+    "right_to_erasure": {
+      "user_id": "user_charlie",
+      "request_date": "2024-11-01T00:00:00Z",
+      "retention_days": 7,
+      "expected_deletion_date": "2024-11-08T00:00:00Z"
+    },
+    "right_to_portability": {
+      "user_id": "user_alice",
+      "request_date": "2024-11-07T10:20:00Z",
+      "export_format": "json",
+      "events_count": 247
+    }
+  },
+  "retention_policies": {
+    "confidential": {
+      "retention_days": 2555,
+      "description": "7 years for financial and legal documents"
+    },
+    "internal": {
+      "retention_days": 1095,
+      "description": "3 years for internal business documents"
+    },
+    "public": {
+      "retention_days": 365,
+      "description": "1 year for public information"
+    },
+    "restricted": {
+      "retention_days": 3650,
+      "description": "10 years for PII and sensitive data"
+    }
+  }
+}
