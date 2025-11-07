@@ -1,0 +1,74 @@
+Production Monitoring and Failure Scenarios
+
+Production data pipelines require comprehensive monitoring to detect and respond to failures quickly.
+
+Common Failure Scenarios:
+
+1. Pipeline Deadlock with Parallel Processing
+   - Symptom: Tasks hang indefinitely waiting for resources
+   - Cause: Database connection pool exhaustion, workers exceeding available connections
+   - Fix: Limit connection pool size, separate read/write connections
+   - Prevention: Set task timeouts, monitor active connections
+
+2. Task Scheduling Conflicts (Overlapping Runs)
+   - Symptom: Multiple pipeline instances running simultaneously
+   - Cause: Previous run didn't complete before next scheduled run
+   - Fix: Set max_active_runs=1 in DAG configuration
+   - Prevention: Alert when pipeline duration exceeds expected time
+
+3. Resource Exhaustion During Batch Jobs
+   - Symptom: OutOfMemory errors, system slowdown
+   - Cause: Loading all documents into memory at once
+   - Fix: Process documents in batches, stream data
+   - Prevention: Memory profiling, set resource limits
+
+4. Zombie Processes (Failed Task Cleanup)
+   - Symptom: Orphaned processes consuming resources after task failure
+   - Cause: Improper exception handling, no cleanup in finally blocks
+   - Fix: Use process groups, implement try/finally cleanup
+   - Prevention: Monitor process counts, automatic cleanup jobs
+
+5. Silent Failures (Monitoring Gaps)
+   - Symptom: Pipeline reports success but data is incorrect
+   - Cause: Error handling that swallows exceptions, no validation
+   - Fix: Add data quality checks, validate outputs
+   - Prevention: End-to-end testing, row count reconciliation
+
+Monitoring Metrics:
+
+- Task execution duration (baseline vs. current)
+- Error rate percentage (threshold: >10% sustained)
+- Worker availability (alert if down >2 minutes)
+- Data freshness lag (alert if >2 hours behind)
+- Queue depth (alert if backlog growing)
+
+Alert Thresholds:
+
+Critical:
+- Pipeline failure (immediate)
+- Error rate >25% (5 minutes sustained)
+- All workers down (immediate)
+
+Warning:
+- Pipeline duration >1.5x expected (30 minutes)
+- Error rate >10% (5 minutes sustained)
+- Data freshness lag >2 hours (15 minutes sustained)
+
+Cost Considerations:
+
+For 10,000 documents with daily refresh:
+- Embedding API: $50/month (text-embedding-3-small)
+- Pinecone: $70/month (1536-dim vectors)
+- Compute: $30/month (4 workers, 2 GB RAM each)
+- Monitoring: $12/month (Prometheus + Grafana)
+Total: ~$162/month
+
+When NOT to Use Airflow:
+
+- Side projects (<500 documents) - Use cron jobs instead
+- Real-time requirements (<1 minute) - Use event-driven architecture
+- Simple linear pipelines - Standard Python scripts suffice
+- Windows-only deployments - Airflow has limited Windows support
+- Resource-constrained servers (<4 GB RAM) - Overhead too high
+
+This document captures production realities often omitted from tutorials.

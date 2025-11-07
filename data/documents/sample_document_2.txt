@@ -1,0 +1,54 @@
+Incremental Indexing and Change Detection
+
+In production RAG systems, re-indexing all documents is inefficient. Incremental indexing updates only changed documents.
+
+Change Detection Strategies:
+
+1. Checksum-based: Calculate SHA256 hash of file contents. Compare with previous checksums to detect changes.
+   - Pros: Reliable, detects any content change
+   - Cons: Requires reading entire file
+
+2. Timestamp-based: Use file modification time (mtime) to detect changes.
+   - Pros: Fast, no file reading required
+   - Cons: Can be unreliable (timestamps can be manipulated)
+
+3. Event-driven: Listen for filesystem events or database triggers.
+   - Pros: Real-time updates
+   - Cons: Complex infrastructure, potential event loss
+
+Pipeline Architecture:
+
+Step 1: Detect Changes
+- Scan document directory
+- Compare current state with previous state
+- Identify new, modified, and deleted files
+
+Step 2: Process Changed Documents
+- Extract text from changed files
+- Split into chunks with overlap
+- Generate embeddings for each chunk
+
+Step 3: Update Vector Database
+- Upsert vectors for changed documents
+- Delete vectors for removed documents
+- Update metadata timestamps
+
+Step 4: Update Checksum Store
+- Save current checksums for next run
+- Include metadata like processing timestamps
+
+Error Handling Considerations:
+
+- Handle missing files gracefully
+- Retry on transient API failures (rate limits, timeouts)
+- Log errors without failing entire pipeline
+- Implement circuit breakers for cascading failures
+
+Performance Optimization:
+
+- Batch embeddings API calls (100 texts per request)
+- Parallel processing of independent documents
+- Use connection pooling for database operations
+- Implement exponential backoff for retries
+
+This approach reduces processing time from hours to minutes for large document sets.

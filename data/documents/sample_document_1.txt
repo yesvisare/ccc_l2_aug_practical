@@ -1,0 +1,29 @@
+Introduction to Data Pipelines and Orchestration
+
+Data pipelines are automated workflows that move and transform data from source systems to destination systems. In production environments, these pipelines must be reliable, scalable, and monitored.
+
+Apache Airflow is a platform to programmatically author, schedule, and monitor workflows. It represents workflows as Directed Acyclic Graphs (DAGs), where each node is a task and edges define dependencies.
+
+Key Concepts:
+
+1. DAG (Directed Acyclic Graph): A collection of tasks with defined dependencies that run on a schedule.
+
+2. Task: A unit of work within a DAG, such as running a Python function, executing a SQL query, or transferring data.
+
+3. Operator: A template for a task. Common operators include PythonOperator, BashOperator, and EmailOperator.
+
+4. Scheduler: The component that monitors DAGs and triggers task execution when conditions are met.
+
+5. Executor: Determines how tasks are executed (sequentially, in parallel, on multiple machines).
+
+6. XCom: Cross-communication mechanism for tasks to exchange small amounts of data.
+
+Best Practices:
+
+- Keep tasks idempotent: Running a task multiple times should produce the same result.
+- Use proper error handling and retry logic for transient failures.
+- Monitor pipeline execution and set up alerts for failures.
+- Version control your DAG files like regular code.
+- Test DAGs in development before deploying to production.
+
+This document serves as a foundation for understanding orchestration patterns in RAG systems.
