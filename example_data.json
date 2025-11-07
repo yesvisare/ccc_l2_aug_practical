@@ -1,0 +1,107 @@
+{
+  "description": "Sample time-series metrics for intelligent alerting demonstration",
+  "baseline_metrics": {
+    "metric_name": "http_request_duration_seconds",
+    "resolution": "1m",
+    "duration_days": 7,
+    "data_points": [
+      {"timestamp": "2025-11-01T00:00:00Z", "value": 0.15},
+      {"timestamp": "2025-11-01T00:01:00Z", "value": 0.16},
+      {"timestamp": "2025-11-01T00:02:00Z", "value": 0.14},
+      {"timestamp": "2025-11-01T00:03:00Z", "value": 0.17},
+      {"timestamp": "2025-11-01T00:04:00Z", "value": 0.15},
+      {"timestamp": "2025-11-01T00:05:00Z", "value": 0.16}
+    ],
+    "note": "Full 7 days would have ~10,080 data points. Truncated for example."
+  },
+  "anomaly_scenarios": [
+    {
+      "scenario": "normal_operation",
+      "timestamp": "2025-11-07T10:00:00Z",
+      "value": 0.16,
+      "expected_yhat": 0.155,
+      "expected_yhat_lower": 0.10,
+      "expected_yhat_upper": 0.20,
+      "is_anomaly": false,
+      "severity": null
+    },
+    {
+      "scenario": "high_latency_spike",
+      "timestamp": "2025-11-07T10:05:00Z",
+      "value": 2.5,
+      "expected_yhat": 0.16,
+      "expected_yhat_lower": 0.10,
+      "expected_yhat_upper": 0.22,
+      "is_anomaly": true,
+      "severity": "high",
+      "sigma_deviation": 5.2
+    },
+    {
+      "scenario": "moderate_degradation",
+      "timestamp": "2025-11-07T10:10:00Z",
+      "value": 0.45,
+      "expected_yhat": 0.17,
+      "expected_yhat_lower": 0.11,
+      "expected_yhat_upper": 0.23,
+      "is_anomaly": true,
+      "severity": "medium",
+      "sigma_deviation": 3.8
+    }
+  ],
+  "alert_aggregation_example": {
+    "alerts": [
+      {
+        "id": "alert_1",
+        "metric": "http_request_duration_seconds",
+        "service": "api-gateway",
+        "timestamp": "2025-11-07T10:05:00Z",
+        "severity": "high",
+        "message": "High latency detected: 2.5s"
+      },
+      {
+        "id": "alert_2",
+        "metric": "cache_miss_rate",
+        "service": "api-gateway",
+        "timestamp": "2025-11-07T10:05:30Z",
+        "severity": "medium",
+        "message": "Cache miss rate elevated: 85%"
+      },
+      {
+        "id": "alert_3",
+        "metric": "timeout_errors",
+        "service": "api-gateway",
+        "timestamp": "2025-11-07T10:06:00Z",
+        "severity": "high",
+        "message": "Timeout errors increasing: 15/min"
+      }
+    ],
+    "aggregated_incident": {
+      "id": "incident_001",
+      "service": "api-gateway",
+      "timestamp": "2025-11-07T10:05:00Z",
+      "severity": "high",
+      "alert_count": 3,
+      "summary": "API Gateway Performance Degradation: High latency (2.5s), elevated cache misses (85%), timeout errors (15/min)"
+    }
+  },
+  "runbook_scenarios": [
+    {
+      "trigger": "cache_full",
+      "condition": "cache_memory_usage > 95%",
+      "action": "flush_lru_entries",
+      "parameters": {"percentage": 20}
+    },
+    {
+      "trigger": "connection_pool_exhausted",
+      "condition": "active_connections >= max_connections",
+      "action": "restart_service",
+      "parameters": {"graceful": true, "timeout": 30}
+    },
+    {
+      "trigger": "rate_limit_hit",
+      "condition": "rate_limit_errors > 10/min",
+      "action": "enable_aggressive_caching",
+      "parameters": {"cache_ttl": 300}
+    }
+  ]
+}
