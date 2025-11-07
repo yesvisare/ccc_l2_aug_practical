@@ -1,0 +1,229 @@
+{
+  "description": "Sample data for Module 7.3: Custom Business Metrics",
+  "queries": [
+    {
+      "query_id": "q001",
+      "user_id": "u101",
+      "user_metadata": {
+        "tier": "free",
+        "days_since_signup": 45,
+        "query_count": 25,
+        "days_since_last_query": 2
+      },
+      "accuracy": "accurate",
+      "satisfaction": 5,
+      "confidence": 0.92,
+      "feature": "simple_qa",
+      "latency_ms": 234.5
+    },
+    {
+      "query_id": "q002",
+      "user_id": "u102",
+      "user_metadata": {
+        "tier": "paid",
+        "days_since_signup": 120,
+        "query_count": 450,
+        "days_since_last_query": 1
+      },
+      "accuracy": "accurate",
+      "satisfaction": 4,
+      "confidence": 0.88,
+      "feature": "summarization",
+      "latency_ms": 456.2
+    },
+    {
+      "query_id": "q003",
+      "user_id": "u103",
+      "user_metadata": {
+        "tier": "enterprise",
+        "days_since_signup": 180,
+        "query_count": 1250,
+        "days_since_last_query": 0
+      },
+      "accuracy": "accurate",
+      "satisfaction": 5,
+      "confidence": 0.95,
+      "feature": "multi_doc",
+      "latency_ms": 892.3
+    },
+    {
+      "query_id": "q004",
+      "user_id": "u104",
+      "user_metadata": {
+        "tier": "free",
+        "days_since_signup": 10,
+        "query_count": 8,
+        "days_since_last_query": 0
+      },
+      "accuracy": "partial",
+      "satisfaction": 3,
+      "confidence": 0.62,
+      "feature": "simple_qa",
+      "latency_ms": 198.7
+    },
+    {
+      "query_id": "q005",
+      "user_id": "u105",
+      "user_metadata": {
+        "tier": "paid",
+        "days_since_signup": 200,
+        "query_count": 890,
+        "days_since_last_query": 16
+      },
+      "accuracy": "inaccurate",
+      "satisfaction": 2,
+      "confidence": 0.41,
+      "feature": "simple_qa",
+      "latency_ms": 312.1
+    },
+    {
+      "query_id": "q006",
+      "user_id": "u106",
+      "user_metadata": {
+        "tier": "free",
+        "days_since_signup": 90,
+        "query_count": 67,
+        "days_since_last_query": 1
+      },
+      "accuracy": "hallucinated",
+      "satisfaction": 1,
+      "confidence": 0.55,
+      "feature": "conversational",
+      "latency_ms": 267.8
+    },
+    {
+      "query_id": "q007",
+      "user_id": "u107",
+      "user_metadata": {
+        "tier": "paid",
+        "days_since_signup": 60,
+        "query_count": 150,
+        "days_since_last_query": 0
+      },
+      "accuracy": "accurate",
+      "satisfaction": 5,
+      "confidence": 0.91,
+      "feature": "summarization",
+      "latency_ms": 401.2
+    },
+    {
+      "query_id": "q008",
+      "user_id": "u108",
+      "user_metadata": {
+        "tier": "enterprise",
+        "days_since_signup": 365,
+        "query_count": 3200,
+        "days_since_last_query": 0
+      },
+      "accuracy": "accurate",
+      "satisfaction": 5,
+      "confidence": 0.97,
+      "feature": "multi_doc",
+      "latency_ms": 1023.4
+    },
+    {
+      "query_id": "q009",
+      "user_id": "u109",
+      "user_metadata": {
+        "tier": "free",
+        "days_since_signup": 5,
+        "query_count": 3,
+        "days_since_last_query": 0
+      },
+      "accuracy": "partial",
+      "satisfaction": 3,
+      "confidence": 0.68,
+      "feature": "simple_qa",
+      "latency_ms": 210.3
+    },
+    {
+      "query_id": "q010",
+      "user_id": "u110",
+      "user_metadata": {
+        "tier": "paid",
+        "days_since_signup": 150,
+        "query_count": 520,
+        "days_since_last_query": 1
+      },
+      "accuracy": "accurate",
+      "satisfaction": 4,
+      "confidence": 0.89,
+      "feature": "conversational",
+      "latency_ms": 345.6
+    }
+  ],
+  "cohort_summary": {
+    "free": {
+      "users": 4,
+      "queries": 103,
+      "avg_satisfaction": 3.0,
+      "avg_confidence": 0.69,
+      "hallucinations": 1
+    },
+    "paid": {
+      "users": 4,
+      "queries": 2010,
+      "avg_satisfaction": 3.75,
+      "avg_confidence": 0.77,
+      "hallucinations": 0
+    },
+    "enterprise": {
+      "users": 2,
+      "queries": 4450,
+      "avg_satisfaction": 5.0,
+      "avg_confidence": 0.96,
+      "hallucinations": 0
+    },
+    "new": {
+      "users": 2,
+      "queries": 11,
+      "avg_satisfaction": 3.0,
+      "avg_confidence": 0.68,
+      "hallucinations": 0
+    },
+    "power": {
+      "users": 3,
+      "queries": 5070,
+      "avg_satisfaction": 4.67,
+      "avg_confidence": 0.91,
+      "hallucinations": 0
+    },
+    "at_risk": {
+      "users": 1,
+      "queries": 890,
+      "avg_satisfaction": 2.0,
+      "avg_confidence": 0.41,
+      "hallucinations": 0
+    }
+  },
+  "feature_usage": {
+    "simple_qa": {
+      "total_uses": 4,
+      "successful_uses": 3,
+      "avg_satisfaction": 3.25
+    },
+    "summarization": {
+      "total_uses": 2,
+      "successful_uses": 2,
+      "avg_satisfaction": 4.5
+    },
+    "multi_doc": {
+      "total_uses": 2,
+      "successful_uses": 2,
+      "avg_satisfaction": 5.0
+    },
+    "conversational": {
+      "total_uses": 2,
+      "successful_uses": 1,
+      "avg_satisfaction": 3.0
+    }
+  },
+  "kpi_baseline": {
+    "total_queries": 10,
+    "total_users": 10,
+    "avg_satisfaction": 3.7,
+    "hallucination_rate": 10.0,
+    "total_cost_usd": 0.05,
+    "cost_per_user_usd": 0.005
+  }
+}
