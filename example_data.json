@@ -1,0 +1,140 @@
+{
+  "test_queries": [
+    {
+      "query_id": "q001",
+      "question": "What are GDPR data retention requirements?",
+      "user_id": "user_001"
+    },
+    {
+      "query_id": "q002",
+      "question": "How long should we retain customer financial records?",
+      "user_id": "user_002"
+    },
+    {
+      "query_id": "q003",
+      "question": "What is the minimum data retention period for audit logs?",
+      "user_id": "user_003"
+    },
+    {
+      "query_id": "q004",
+      "question": "Do we need to keep backup copies of deleted user data?",
+      "user_id": "user_004"
+    },
+    {
+      "query_id": "q005",
+      "question": "What are the penalties for non-compliance with data retention policies?",
+      "user_id": "user_005"
+    }
+  ],
+  "experiment_scenarios": [
+    {
+      "scenario_name": "Chunk Size Test",
+      "description": "Test if larger chunks improve faithfulness",
+      "control_config": {
+        "chunk_size": 512,
+        "overlap": 50,
+        "top_k": 5
+      },
+      "treatment_config": {
+        "chunk_size": 1024,
+        "overlap": 100,
+        "top_k": 5
+      },
+      "expected_outcome": "2-3% improvement in faithfulness",
+      "expected_tradeoff": "Higher cost and latency"
+    },
+    {
+      "scenario_name": "Top-K Test",
+      "description": "Test if more context improves answer relevance",
+      "control_config": {
+        "chunk_size": 512,
+        "overlap": 50,
+        "top_k": 5
+      },
+      "treatment_config": {
+        "chunk_size": 512,
+        "overlap": 50,
+        "top_k": 10
+      },
+      "expected_outcome": "Improved context precision",
+      "expected_tradeoff": "More noise, potentially lower faithfulness"
+    },
+    {
+      "scenario_name": "Temperature Test",
+      "description": "Test if lower temperature improves consistency",
+      "control_config": {
+        "temperature": 0.7,
+        "max_tokens": 512
+      },
+      "treatment_config": {
+        "temperature": 0.3,
+        "max_tokens": 512
+      },
+      "expected_outcome": "More consistent answers",
+      "expected_tradeoff": "Less creative, potentially robotic responses"
+    }
+  ],
+  "sample_metrics": {
+    "control_variant": {
+      "sample_size": 1250,
+      "faithfulness": {
+        "mean": 0.8234,
+        "std_dev": 0.0856,
+        "min": 0.6123,
+        "max": 0.9876
+      },
+      "answer_relevance": {
+        "mean": 0.7845,
+        "std_dev": 0.0923,
+        "min": 0.5432,
+        "max": 0.9654
+      },
+      "context_precision": {
+        "mean": 0.8567,
+        "std_dev": 0.0734,
+        "min": 0.6789,
+        "max": 0.9823
+      },
+      "latency_ms": {
+        "mean": 487,
+        "p95": 723,
+        "p99": 891
+      }
+    },
+    "treatment_variant": {
+      "sample_size": 1287,
+      "faithfulness": {
+        "mean": 0.8467,
+        "std_dev": 0.0812,
+        "min": 0.6345,
+        "max": 0.9912
+      },
+      "answer_relevance": {
+        "mean": 0.7923,
+        "std_dev": 0.0889,
+        "min": 0.5678,
+        "max": 0.9723
+      },
+      "context_precision": {
+        "mean": 0.8612,
+        "std_dev": 0.0698,
+        "min": 0.6912,
+        "max": 0.9876
+      },
+      "latency_ms": {
+        "mean": 723,
+        "p95": 1045,
+        "p99": 1312
+      }
+    },
+    "statistical_analysis": {
+      "faithfulness_difference": 0.0233,
+      "percent_change": 2.83,
+      "p_value": 0.0127,
+      "is_significant": true,
+      "confidence_interval_95": [0.0051, 0.0415],
+      "winner": "treatment",
+      "recommendation": "Roll out treatment with gradual rollout: 10% → 50% → 100%"
+    }
+  }
+}
