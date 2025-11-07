@@ -1,0 +1,32 @@
+# Core RAGAS dependencies
+ragas==0.1.8
+langchain==0.1.20
+langchain-community==0.0.38
+langchain-openai==0.0.8
+datasets==2.16.1
+
+# OpenAI for LLM-as-judge
+openai==1.12.0
+
+# MLflow for tracking (optional but recommended)
+mlflow==2.9.2
+
+# FastAPI for API wrapper
+fastapi==0.109.2
+uvicorn[standard]==0.27.1
+pydantic==2.6.1
+pydantic-settings==2.1.0
+
+# Data handling
+pandas==2.2.0
+numpy==1.26.4
+
+# Environment management
+python-dotenv==1.0.1
+
+# Testing
+pytest==8.0.0
+pytest-asyncio==0.23.5
+
+# Monitoring (optional)
+prometheus-client==0.19.0

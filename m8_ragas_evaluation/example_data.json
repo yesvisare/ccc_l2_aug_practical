@@ -1,0 +1,59 @@
+{
+  "metadata": {
+    "name": "example_compliance_rag",
+    "version": "v1",
+    "count": 3,
+    "created_at": "2025-01-15T10:00:00",
+    "description": "Example golden test set for compliance RAG system"
+  },
+  "questions": [
+    {
+      "question_id": "a1b2c3d4e5f6",
+      "question": "What are the GDPR data retention requirements for employee records in healthcare?",
+      "ground_truth": "Under GDPR Article 17 and healthcare-specific regulations, employee records must be retained for 6 years after employment ends, or longer if required by national healthcare record laws. Medical information within employee records may require retention up to 8 years.",
+      "contexts": [
+        "GDPR Article 17 establishes the right to erasure ('right to be forgotten'), but includes exemptions for legal obligations. In healthcare, employee medical records fall under special category data with extended retention requirements.",
+        "Healthcare employment records uniquely combine general employment data (6 year retention) with medical clearances, vaccination records, and occupational health data (8 year retention for medical records).",
+        "National laws may impose longer retention periods than GDPR minimums. For example, UK healthcare requires 8 years for adult health records, extending to employee health information."
+      ],
+      "metadata": {
+        "category": "data_retention",
+        "complexity": "high",
+        "industries": ["healthcare"],
+        "regulations": ["GDPR", "healthcare_specific"]
+      }
+    },
+    {
+      "question_id": "b2c3d4e5f6g7",
+      "question": "If a contractor violates SOC 2 requirements, what are our notification obligations?",
+      "ground_truth": "Within 72 hours of discovering contractor violation of SOC 2 controls, notification required to: affected customers, audit committee, and external auditor. Documentation must include scope of violation, affected controls, and remediation timeline.",
+      "contexts": [
+        "SOC 2 compliance requires continuous monitoring of vendor and contractor security controls. Material violations must be reported to stakeholders within defined timeframes.",
+        "The 72-hour notification requirement applies to violations that impact security, availability, processing integrity, confidentiality, or privacy controls.",
+        "Notification must include: description of violation, affected systems/data, list of impacted controls, root cause analysis (preliminary), and remediation plan with timeline."
+      ],
+      "metadata": {
+        "category": "incident_response",
+        "complexity": "medium",
+        "industries": ["technology", "finance"],
+        "regulations": ["SOC2"]
+      }
+    },
+    {
+      "question_id": "c3d4e5f6g7h8",
+      "question": "What is the maximum fine for GDPR violations?",
+      "ground_truth": "GDPR violations can result in fines up to €20 million or 4% of annual global turnover, whichever is higher. The actual fine depends on severity, intent, and mitigating factors.",
+      "contexts": [
+        "GDPR Article 83 establishes two tiers of administrative fines. The higher tier (up to €20 million or 4% of global turnover) applies to serious violations of core principles.",
+        "Factors affecting fine calculation include: nature and severity of infringement, intentional or negligent character, actions taken to mitigate damage, and degree of cooperation with supervisory authority.",
+        "The 4% calculation is based on total worldwide annual turnover of the preceding financial year, not just EU operations."
+      ],
+      "metadata": {
+        "category": "compliance_penalties",
+        "complexity": "low",
+        "industries": ["general"],
+        "regulations": ["GDPR"]
+      }
+    }
+  ]
+}
