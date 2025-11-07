@@ -1,0 +1,24 @@
+Incremental Indexing Strategies
+
+Incremental indexing enables efficient updates to large document collections without full re-indexing. This approach is critical for production systems handling dynamic content.
+
+Core Techniques:
+1. Change Detection: Use checksums (SHA-256) to identify modified documents
+2. Partial Updates: Update only changed vectors in the index
+3. Delete-Then-Insert: Ensure clean updates without orphaned vectors
+4. Version Management: Create snapshots for safe rollback
+5. Batch Processing: Group operations for efficiency
+
+Performance Benefits:
+- Time Reduction: 99.75% faster (3-5s vs 20+ minutes)
+- Cost Reduction: 99.8% cheaper ($0.10 vs $50 per update)
+- Resource Efficiency: Minimal CPU and memory overhead
+
+Common Failure Modes:
+- Orphaned vectors from partial deletions
+- Race conditions in concurrent updates
+- Version conflicts during rollback
+- False positive change detection
+- Partial failures leaving inconsistent state
+
+Best suited for corpora with 500-50,000 documents and update frequencies under 5 per hour.

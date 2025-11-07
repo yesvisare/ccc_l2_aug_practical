@@ -1,0 +1,14 @@
+Understanding Text Embeddings
+
+Text embeddings are dense vector representations of text that capture semantic meaning. Modern embedding models transform words, sentences, or documents into fixed-length vectors where similar texts have similar vector representations.
+
+Evolution of Embeddings:
+- Word2Vec (2013): First successful dense word embeddings
+- GloVe (2014): Global vector representations
+- FastText (2016): Subword-aware embeddings
+- BERT (2018): Contextualized embeddings
+- Sentence Transformers (2019): Sentence-level embeddings
+- OpenAI ada-002 (2022): 1536-dimensional embeddings
+- text-embedding-3-small (2024): 384-dimensional embeddings
+
+Quality metrics include cosine similarity, clustering performance, and downstream task accuracy. Dimensionality affects both accuracy and computational efficiency.

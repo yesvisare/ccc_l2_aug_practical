@@ -1,0 +1,39 @@
+{
+  "description": "Example dataset for M5.1 Incremental Indexing demonstration",
+  "documents": [
+    {
+      "path": "example_documents/doc1_vector_databases.txt",
+      "title": "Vector Databases: A Comprehensive Overview",
+      "category": "infrastructure",
+      "tags": ["vector-db", "search", "indexing"]
+    },
+    {
+      "path": "example_documents/doc2_embeddings.txt",
+      "title": "Understanding Text Embeddings",
+      "category": "machine-learning",
+      "tags": ["embeddings", "nlp", "vector-representations"]
+    },
+    {
+      "path": "example_documents/doc3_incremental_indexing.txt",
+      "title": "Incremental Indexing Strategies",
+      "category": "data-management",
+      "tags": ["incremental-indexing", "optimization", "production"]
+    }
+  ],
+  "stats": {
+    "total_documents": 3,
+    "estimated_chunks": 15,
+    "estimated_vectors": 15,
+    "total_size_bytes": 2847
+  },
+  "usage": {
+    "purpose": "Demonstrates incremental indexing workflow",
+    "scenarios": [
+      "Initial full indexing",
+      "Detecting new documents",
+      "Detecting modified documents",
+      "Handling deleted documents",
+      "Version rollback"
+    ]
+  }
+}
