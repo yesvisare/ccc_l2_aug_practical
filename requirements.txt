@@ -1,0 +1,44 @@
+# Module 8.3: Regression Testing & CI/CD for RAG Systems
+# Core dependencies from script
+
+# DVC and Version Control (from script prerequisites)
+dvc==3.48.4
+dvc-s3==3.2.0
+
+# Testing Framework
+pytest==8.0.2
+pytest-benchmark==4.0.0
+
+# OpenAI for LLM/Embeddings
+openai==1.12.0
+
+# RAG Evaluation (referenced in script - M8.1 prerequisite)
+ragas==0.1.5
+
+# AWS for S3 storage (DVC remote)
+boto3==1.34.51
+
+# Environment Variables
+python-dotenv==1.0.1
+
+# FastAPI for app.py wrapper
+fastapi==0.109.2
+uvicorn==0.27.1
+pydantic==2.6.1
+
+# Data Processing
+pandas==2.2.0
+numpy==1.26.4
+
+# Jupyter Notebook
+jupyter==1.0.0
+notebook==7.1.0
+ipykernel==6.29.2
+nbformat==5.9.2
+
+# Monitoring (optional - for /metrics endpoint)
+prometheus-client==0.20.0
+
+# Utilities
+requests==2.31.0
+typing-extensions==4.9.0

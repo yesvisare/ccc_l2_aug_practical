@@ -1,0 +1,133 @@
+{
+  "test_questions": [
+    {
+      "id": 1,
+      "question": "What is RAG (Retrieval Augmented Generation)?",
+      "expected_answer": "RAG is a technique that combines information retrieval with language generation. It retrieves relevant documents from a knowledge base and uses them as context for generating answers, improving accuracy and reducing hallucinations.",
+      "contexts": [
+        "Retrieval Augmented Generation (RAG) is an AI framework that combines retrieval systems with large language models.",
+        "RAG works by first retrieving relevant documents from a knowledge base, then using those documents as context for the LLM to generate accurate answers."
+      ],
+      "ground_truth": "RAG combines retrieval and generation for more accurate AI responses."
+    },
+    {
+      "id": 2,
+      "question": "Why is regression testing important for RAG systems?",
+      "expected_answer": "Regression testing ensures that changes to the RAG system (like embedding models, prompts, or reranking thresholds) don't degrade answer quality. It catches issues before they reach production users.",
+      "contexts": [
+        "Regression testing validates that system changes don't negatively impact existing functionality.",
+        "For RAG systems, even minor changes like embedding model updates can cause significant quality degradation.",
+        "Automated regression tests should check faithfulness, relevancy, precision, latency, and cost metrics."
+      ],
+      "ground_truth": "Regression testing prevents quality degradation from system changes."
+    },
+    {
+      "id": 3,
+      "question": "What are the key metrics for evaluating RAG systems?",
+      "expected_answer": "Key RAG metrics include: Faithfulness (answer grounded in context), Answer Relevancy (relevance to question), Context Precision (quality of retrieved documents), latency (response time), and cost per query.",
+      "contexts": [
+        "RAGAS framework defines several key metrics for RAG evaluation.",
+        "Faithfulness measures whether the answer is grounded in the retrieved context.",
+        "Answer Relevancy checks if the response addresses the user's question.",
+        "Context Precision evaluates the quality and relevance of retrieved documents."
+      ],
+      "ground_truth": "RAG metrics include faithfulness, relevancy, precision, latency, and cost."
+    },
+    {
+      "id": 4,
+      "question": "What is DVC and why is it used for RAG systems?",
+      "expected_answer": "DVC (Data Version Control) is a version control system for ML models and data. For RAG systems, it tracks embedding models, prompts, and configurations, enabling reproducibility and instant rollback to previous versions if issues occur.",
+      "contexts": [
+        "DVC is like Git but for machine learning models, datasets, and large files.",
+        "DVC stores model files in remote storage (like S3) while tracking metadata in Git.",
+        "This enables teams to version models alongside code and rollback when needed."
+      ],
+      "ground_truth": "DVC enables versioning and rollback for ML models and data."
+    },
+    {
+      "id": 5,
+      "question": "What is canary deployment and how does it help RAG systems?",
+      "expected_answer": "Canary deployment tests new versions on a small subset of production traffic before full rollout. For RAG, it runs 10-20 test queries and automatically rolls back if the pass rate falls below threshold (typically 80%), preventing bad deployments.",
+      "contexts": [
+        "Canary deployment is a release pattern that reduces deployment risk.",
+        "A small percentage of traffic is routed to the new version first.",
+        "If metrics show degradation, the deployment is automatically rolled back.",
+        "For RAG systems, canary tests check quality metrics on real production queries."
+      ],
+      "ground_truth": "Canary deployment safely tests new versions before full rollout."
+    },
+    {
+      "id": 6,
+      "question": "What causes flaky tests in CI/CD pipelines?",
+      "expected_answer": "Flaky tests fail intermittently due to infrastructure variance, network issues, API latency fluctuations, or non-deterministic model outputs. They create false failures that block valid code changes.",
+      "contexts": [
+        "Flaky tests are tests that sometimes pass and sometimes fail for the same code.",
+        "Common causes include network timeouts, race conditions, and external service variability.",
+        "For ML systems, non-deterministic model outputs can cause test flakiness.",
+        "Solutions include running tests multiple times and using median values with tolerance bands."
+      ],
+      "ground_truth": "Flaky tests fail intermittently due to infrastructure or non-determinism."
+    },
+    {
+      "id": 7,
+      "question": "When should you NOT use CI/CD for RAG systems?",
+      "expected_answer": "Avoid CI/CD when deploying less than 5 times per month, team has fewer than 3 people, budget is under $50/month, or the product is pre-PMF with rapidly changing requirements. Manual testing is more efficient in these cases.",
+      "contexts": [
+        "CI/CD adds overhead in setup time, cost, and maintenance.",
+        "For small teams deploying infrequently, manual testing is more practical.",
+        "The break-even point is typically 20-100 deploys per month with 3-10 engineers.",
+        "Pre-product-market-fit products change too rapidly for regression test maintenance."
+      ],
+      "ground_truth": "Skip CI/CD for low-frequency deployments, small teams, or pre-PMF products."
+    },
+    {
+      "id": 8,
+      "question": "How do you handle DVC merge conflicts?",
+      "expected_answer": "When two team members update models simultaneously, DVC creates conflicting .dvc files with different MD5 hashes. Solution: Test both versions on the regression suite and automatically choose the one with better faithfulness scores.",
+      "contexts": [
+        "DVC merge conflicts occur when multiple people change tracked files concurrently.",
+        "The .dvc metadata files contain MD5 hashes that conflict during git merge.",
+        "Manual resolution requires understanding which model version is better.",
+        "Automated resolution can test both versions and pick the winner based on metrics."
+      ],
+      "ground_truth": "Resolve DVC conflicts by testing both versions and choosing the better one."
+    },
+    {
+      "id": 9,
+      "question": "What is the recommended CI pipeline timeout for RAG testing?",
+      "expected_answer": "CI pipelines should complete in under 10 minutes, ideally 3-5 minutes. This is achieved by testing a 50-question subset instead of the full 500-question evaluation suite, trading thoroughness for speed.",
+      "contexts": [
+        "Fast CI pipelines are critical for developer productivity.",
+        "Pipelines over 10 minutes cause developers to context-switch during waits.",
+        "The 50-question subset runs in ~3 minutes versus 20 minutes for the full 500-question set.",
+        "Full evaluation can run nightly or weekly as a separate slower process."
+      ],
+      "ground_truth": "CI should complete in under 10 minutes, ideally 3-5 minutes."
+    },
+    {
+      "id": 10,
+      "question": "How are regression thresholds calibrated?",
+      "expected_answer": "Collect historical baseline data, calculate mean and standard deviation, then set thresholds to baseline minus 2 standard deviations. This targets a 2-5% false positive rate while catching real regressions.",
+      "contexts": [
+        "Fixed thresholds are either too sensitive (false positives) or too loose (miss regressions).",
+        "Data-driven calibration uses statistical analysis of historical metrics.",
+        "The formula is: threshold = baseline_mean - (2 × baseline_stddev).",
+        "This approach adapts to your specific system's variability and performance."
+      ],
+      "ground_truth": "Use baseline mean minus 2 standard deviations for threshold calibration."
+    }
+  ],
+  "metadata": {
+    "description": "Sample test data for Module 8.3: Regression Testing & CI/CD",
+    "total_questions": 10,
+    "recommended_subset_size": 50,
+    "script_version": "M8.3",
+    "metrics_tested": [
+      "faithfulness",
+      "answer_relevancy",
+      "context_precision",
+      "latency",
+      "cost"
+    ]
+  }
+}
