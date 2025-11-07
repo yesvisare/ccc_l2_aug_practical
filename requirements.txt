@@ -1,0 +1,35 @@
+# Module 6.2: Secrets Management & Rotation
+# Dependencies for HashiCorp Vault integration and secret scanning
+
+# Vault client
+hvac==2.1.0
+
+# FastAPI application
+fastapi==0.109.0
+uvicorn[standard]==0.27.0
+pydantic==2.5.3
+python-dotenv==1.0.0
+
+# Secret scanning tools
+detect-secrets==1.4.0
+pre-commit==3.6.0
+
+# OpenAI and Pinecone (from Level 1 M3)
+openai==1.10.0
+pinecone-client==3.0.2
+
+# Redis (from Level 1 M3)
+redis==5.0.1
+
+# Caching utilities
+cachetools==5.3.2
+
+# Testing
+pytest==7.4.4
+pytest-asyncio==0.23.3
+
+# Monitoring (optional)
+prometheus-client==0.19.0
+
+# Logging
+structlog==24.1.0

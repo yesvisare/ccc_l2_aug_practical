@@ -1,0 +1,119 @@
+{
+  "vault_secrets": {
+    "dev": {
+      "rag-system/dev": {
+        "openai_key": "sk-dev-test-key-12345",
+        "pinecone_key": "dev-pinecone-12345",
+        "redis_url": "redis://localhost:6379"
+      }
+    },
+    "staging": {
+      "rag-system/staging": {
+        "openai_key": "sk-staging-key-67890",
+        "pinecone_key": "staging-pinecone-67890",
+        "redis_url": "redis://staging-redis:6379"
+      }
+    },
+    "prod": {
+      "rag-system/prod": {
+        "openai_key": "sk-prod-key-REPLACE-WITH-REAL",
+        "pinecone_key": "prod-pinecone-REPLACE-WITH-REAL",
+        "redis_url": "redis://prod-redis:6379"
+      }
+    }
+  },
+  "rotation_scenarios": [
+    {
+      "scenario": "OpenAI key leaked in public repo",
+      "action": "Immediate rotation required",
+      "steps": [
+        "Generate new key in OpenAI dashboard",
+        "Update Vault with new key via rotate_secret()",
+        "Verify all services picked up new key",
+        "Revoke old key in OpenAI dashboard"
+      ]
+    },
+    {
+      "scenario": "Scheduled 30-day rotation",
+      "action": "Automated rotation via scheduled_rotation()",
+      "steps": [
+        "Schedule rotation with 720-hour interval",
+        "System automatically generates new key",
+        "Zero-downtime switchover with 5s grace period",
+        "Old key remains valid for 24 hours (blue-green)"
+      ]
+    },
+    {
+      "scenario": "Employee departure",
+      "action": "Rotate all secrets accessed by employee",
+      "steps": [
+        "Audit Vault logs for secret access by employee",
+        "Identify all secrets accessed in last 90 days",
+        "Rotate each secret via batch rotation",
+        "Verify no failed authentications"
+      ]
+    }
+  ],
+  "common_failures": {
+    "rotation_race_condition": {
+      "symptom": "401 Unauthorized errors during rotation",
+      "root_cause": "In-flight requests using old key after rotation",
+      "fix": "Implement request tracking with grace period",
+      "prevention": "Use SecretRotationManager.track_request() context manager"
+    },
+    "vault_connection_failure": {
+      "symptom": "Application fails to start: ConnectionRefusedError",
+      "root_cause": "Vault server unavailable or token invalid",
+      "fix": "Use ResilientVaultClient with fallback_env=True",
+      "prevention": "Monitor Vault health separately, implement retry logic"
+    },
+    "stale_cache": {
+      "symptom": "Services using old secrets after rotation",
+      "root_cause": "LRU cache not invalidated after rotation",
+      "fix": "Call get_secret.cache_clear() after rotation",
+      "prevention": "Use cache versioning or pub/sub invalidation"
+    },
+    "git_leak": {
+      "symptom": "Secret found in git history after deletion",
+      "root_cause": "Git tracks all history permanently",
+      "fix": "git filter-repo --path .env --invert-paths + force push",
+      "prevention": "Install detect-secrets pre-commit hooks"
+    },
+    "environment_conflict": {
+      "symptom": "Production using dev secrets",
+      "root_cause": "Local env vars shadowing deployment config",
+      "fix": "Validate environment with validate_environment_config()",
+      "prevention": "Explicit environment checks, separate Vault namespaces"
+    }
+  },
+  "cost_breakdown": {
+    "small_scale": {
+      "description": "1 server, <100 req/hour",
+      "vault_infra": 15,
+      "redis_cache": 0,
+      "backups": 0,
+      "monitoring": 5,
+      "total_monthly_usd": 20,
+      "developer_hours_per_month": 2
+    },
+    "medium_scale": {
+      "description": "5 services, 1000 req/hour",
+      "vault_infra": 45,
+      "redis_cache": 15,
+      "backups": 20,
+      "monitoring": 15,
+      "total_monthly_usd": 95,
+      "developer_hours_per_month": 4
+    },
+    "large_scale": {
+      "description": "15+ services, 10000+ req/hour",
+      "vault_infra": 150,
+      "redis_cache": 80,
+      "backups": 40,
+      "monitoring": 50,
+      "total_monthly_usd": 320,
+      "developer_hours_per_month": 8,
+      "note": "Consider Vault Enterprise ($4500/year) or managed service"
+    }
+  }
+}
