@@ -4,6 +4,20 @@
 
 ---
 
+## Purpose
+Track business‑level KPIs for RAG (feature adoption, satisfaction, revenue attribution) and connect them to technical telemetry.
+
+## Concepts Covered
+Cohorts, feature usage, satisfaction & hallucination metrics, KPI aggregation, Prometheus export, offline‑first testability.
+
+## After Completing
+You can instrument/compute business KPIs for RAG, expose them via API/Prometheus, and validate them with smoke tests.
+
+## Context in Track
+L2 → Observability & Tracing; this module complements technical metrics with business value signals before L3 scaling.
+
+---
+
 ## Overview
 
 This module teaches how to track RAG-specific **business metrics** beyond technical monitoring, bridging the gap between infrastructure observability and executive decision-making.
@@ -46,22 +60,65 @@ pip install -r requirements.txt
 # Configure environment
 cp .env.example .env
 # Edit .env with your configuration
-
-# Run the module
-python l2_m7_custom_business_metrics.py
-
-# Or start the API server
-python app.py
 ```
 
-### Quick Test
+### Environment Variables
 
+| Variable | Purpose |
+|----------|---------|
+| `ENVIRONMENT` | Runtime environment (development/production) |
+| `DEBUG` | Enable debug mode (true/false) |
+| `LOG_LEVEL` | Logging level (INFO/DEBUG/ERROR) |
+| `PROMETHEUS_ENABLED` | Enable Prometheus metrics export |
+| `PROMETHEUS_PORT` | Port for Prometheus metrics endpoint |
+| `PROMETHEUS_PATH` | Path for metrics endpoint |
+| `PROMETHEUS_PUSH_GATEWAY_URL` | Optional Prometheus push gateway |
+| `REDIS_ENABLED` | Enable Redis for fast cohort lookups |
+| `REDIS_HOST` | Redis server hostname |
+| `REDIS_PORT` | Redis server port |
+| `REDIS_DB` | Redis database number |
+| `REDIS_PASSWORD` | Redis authentication password |
+| `REDIS_TTL_SECONDS` | Cache TTL for cohort data |
+| `CLICKHOUSE_ENABLED` | Enable ClickHouse for analytics (>100K queries/month) |
+| `CLICKHOUSE_HOST` | ClickHouse server hostname |
+| `CLICKHOUSE_PORT` | ClickHouse server port |
+| `CLICKHOUSE_DATABASE` | ClickHouse database name |
+| `CLICKHOUSE_USER` | ClickHouse username |
+| `CLICKHOUSE_PASSWORD` | ClickHouse password |
+| `COHORT_LOOKUP_MAX_MS` | Max time for cohort lookup (must be <10ms) |
+| `MAX_LABEL_CARDINALITY` | Max unique label values (prevent cardinality explosion) |
+| `HALLUCINATION_ALERT_THRESHOLD` | Alert threshold for hallucination rate (%) |
+| `POWER_USER_QUERY_THRESHOLD` | Min queries/month to classify as power user |
+| `AVG_QUERY_COST_DOLLARS` | Average cost per query in USD |
+| `API_HOST` | FastAPI server host |
+| `API_PORT` | FastAPI server port |
+| `API_RELOAD` | Enable auto-reload for development |
+
+### Running the Application
+
+**Windows (recommended):**
+```powershell
+# Run API
+powershell -c "$env:PYTHONPATH='$PWD'; uvicorn app:app --reload"
+
+# Run tests
+powershell -c "$env:PYTHONPATH='$PWD'; pytest -q"
+
+# Or use helper scripts
+.\scripts\run_api.ps1
+.\scripts\run_tests.ps1
+```
+
+**Linux/Mac:**
 ```bash
-# Run smoke tests
-pytest tests_smoke.py -v
+# Run API
+python app.py
+
+# Run tests
+pytest
 
 # Start Jupyter notebook
-jupyter notebook L2_M7_Custom_Business_Metrics.ipynb
+jupyter notebook notebooks/L2_M7_Custom_Business_Metrics.ipynb
 ```
 
 ---

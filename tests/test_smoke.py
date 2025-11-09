@@ -22,6 +22,21 @@ from app import app
 
 
 # =============================================================================
+# SKIP MARKERS FOR OFFLINE-FIRST TESTING
+# =============================================================================
+
+skip_redis = pytest.mark.skipif(
+    os.getenv("REDIS_ENABLED", "false").lower() == "true" and not os.getenv("REDIS_HOST"),
+    reason="Redis not configured"
+)
+
+skip_clickhouse = pytest.mark.skipif(
+    os.getenv("CLICKHOUSE_ENABLED", "false").lower() == "true" and not os.getenv("CLICKHOUSE_HOST"),
+    reason="ClickHouse not configured"
+)
+
+
+# =============================================================================
 # CONFIGURATION TESTS
 # =============================================================================
 
@@ -86,10 +101,10 @@ def test_user_cohort_determination():
     )
     assert cohort == metrics_module.UserCohort.POWER
 
-    # At-risk user
+    # At-risk user (free tier, inactive for >14 days)
     cohort = metrics_module.get_user_cohort(
         "u004",
-        {"tier": "paid", "days_since_signup": 200, "query_count": 80, "days_since_last_query": 20}
+        {"tier": "free", "days_since_signup": 200, "query_count": 80, "days_since_last_query": 20}
     )
     assert cohort == metrics_module.UserCohort.AT_RISK
 
@@ -318,7 +333,7 @@ def test_health_endpoint():
 
 def test_root_endpoint():
     """Test root endpoint."""
-    response = client.get("/")
+    response = client.get("/api/")
     assert response.status_code == 200
 
     data = response.json()
@@ -345,7 +360,7 @@ def test_record_query_endpoint():
         "latency_ms": 234.5
     }
 
-    response = client.post("/metrics/query", json=payload)
+    response = client.post("/api/metrics/query", json=payload)
     assert response.status_code == 200
 
     data = response.json()
@@ -366,7 +381,7 @@ def test_record_query_endpoint_validation():
         "latency_ms": 234.5
     }
 
-    response = client.post("/metrics/query", json=payload)
+    response = client.post("/api/metrics/query", json=payload)
     assert response.status_code == 422  # Validation error
 
 
@@ -376,7 +391,7 @@ def test_kpi_summary_endpoint():
         "time_period": "last_7_days"
     }
 
-    response = client.post("/kpi/summary", json=payload)
+    response = client.post("/api/kpi/summary", json=payload)
     assert response.status_code == 200
 
     data = response.json()
@@ -386,7 +401,7 @@ def test_kpi_summary_endpoint():
 
 def test_prometheus_metrics_endpoint():
     """Test Prometheus metrics endpoint."""
-    response = client.get("/metrics")
+    response = client.get("/api/metrics")
     assert response.status_code == 200
     assert 'text/plain' in response.headers['content-type']
 
