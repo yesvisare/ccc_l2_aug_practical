@@ -19,8 +19,13 @@ This module implements a complete A/B testing framework for RAG systems that all
 git clone <repo-url>
 cd ccc_l2_aug_practical
 
-# Install dependencies
+# Option A: Install as package (recommended)
+pip install -e .
+
+# Option B: Manual setup
 pip install -r requirements.txt
+export PYTHONPATH="${PYTHONPATH}:$(pwd)/src"  # Linux/Mac
+# OR on Windows: $env:PYTHONPATH="$PWD/src"
 
 # Configure environment
 cp .env.example .env
@@ -30,23 +35,30 @@ cp .env.example .env
 ### 2. Run the Notebook
 
 ```bash
-jupyter notebook L2_M8_AB_Testing_for_RAG_Improvements.ipynb
+jupyter notebook notebooks/L2_M8_AB_Testing_for_RAG_Improvements.ipynb
 ```
 
-### 3. Run the Demo
+### 3. Run Tests
 
 ```bash
-# Test the module
-python l2_m8_ab_testing_rag_improvements.py
+# Using scripts (recommended)
+bash scripts/run_tests.sh       # Linux/Mac
+.\scripts\run_tests.ps1          # Windows PowerShell
 
-# Check configuration
-python config.py
+# Or directly with pytest
+PYTHONPATH=./src pytest tests/ -v                    # Linux/Mac
+$env:PYTHONPATH="./src"; pytest tests/ -v            # Windows
+```
 
-# Run smoke tests
-python tests_smoke.py
+### 4. Run the Demo & API
 
+```bash
 # Start FastAPI server
-python app.py
+bash scripts/run_api.sh          # Linux/Mac
+.\scripts\run_api.ps1            # Windows PowerShell
+
+# Or directly
+PYTHONPATH=./src python app.py   # Linux/Mac
 ```
 
 ### 4. Test the API
@@ -257,15 +269,31 @@ Implementation: 8-12 hours. Monthly: $5-10 at 1K/day traffic (database), scales 
 
 ```
 ccc_l2_aug_practical/
-├── l2_m8_ab_testing_rag_improvements.py   # Main module implementation
-├── L2_M8_AB_Testing_for_RAG_Improvements.ipynb  # Tutorial notebook
-├── config.py                               # Configuration management
-├── app.py                                  # FastAPI web service
-├── tests_smoke.py                          # Smoke tests
-├── requirements.txt                        # Python dependencies
-├── .env.example                            # Environment template
-├── example_data.json                       # Sample test data
-└── README.md                               # This file
+├── src/
+│   └── m8_ab_testing_rag/              # Main Python package
+│       ├── __init__.py
+│       ├── ab_testing.py               # Core A/B testing logic
+│       └── config.py                   # Configuration management
+├── tests/
+│   ├── __init__.py
+│   └── test_ab_rag_smoke.py           # Smoke tests (pytest)
+├── notebooks/
+│   └── L2_M8_AB_Testing_for_RAG_Improvements.ipynb  # Tutorial
+├── scripts/
+│   ├── run_tests.ps1                  # Test runner (Windows)
+│   ├── run_tests.sh                   # Test runner (Linux/Mac)
+│   ├── run_api.ps1                    # API runner (Windows)
+│   └── run_api.sh                     # API runner (Linux/Mac)
+├── docs/
+│   └── M8_2_AB_Testing_RAG_I.md       # Source specification
+├── data/
+│   └── example_data.json              # Sample test data
+├── app.py                              # FastAPI web service
+├── setup.py                            # Package installation
+├── requirements.txt                    # Python dependencies
+├── .env.example                        # Environment template
+├── .gitignore                          # Git ignore patterns
+└── README.md                           # This file
 ```
 
 ## Next Module

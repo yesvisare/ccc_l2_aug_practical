@@ -1,16 +1,21 @@
 """
 Smoke tests for Module 8.2: A/B Testing for RAG Improvements
 
-Run with: python tests_smoke.py
+Run with: pytest tests/
 """
 
+import os
 import sys
 import logging
+import pytest
 from datetime import timedelta
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(levelname)s: %(message)s')
 logger = logging.getLogger(__name__)
+
+# Skip integration tests if environment variable is set
+skip_integration = os.getenv('SKIP_INTEGRATION_TESTS', '').lower() == 'true'
 
 
 def test_imports():
@@ -20,7 +25,7 @@ def test_imports():
     print("=" * 60)
 
     try:
-        from l2_m8_ab_testing_rag_improvements import (
+        from m8_ab_testing_rag.ab_testing import (
             ExperimentConfig,
             ExperimentManager,
             TrafficSplitter,
@@ -43,7 +48,7 @@ def test_config_loads():
     print("=" * 60)
 
     try:
-        import config
+        from m8_ab_testing_rag import config
         print(f"✅ Config loaded successfully")
         print(f"   Traffic split: {config.DEFAULT_TRAFFIC_SPLIT}")
         print(f"   Min sample size: {config.MIN_SAMPLE_SIZE}")
@@ -61,7 +66,7 @@ def test_experiment_creation():
     print("=" * 60)
 
     try:
-        from l2_m8_ab_testing_rag_improvements import ExperimentConfig, ExperimentManager
+        from m8_ab_testing_rag.ab_testing import ExperimentConfig, ExperimentManager
 
         config = ExperimentConfig(
             experiment_id="test_exp_001",
@@ -91,7 +96,7 @@ def test_traffic_splitting():
     print("=" * 60)
 
     try:
-        from l2_m8_ab_testing_rag_improvements import TrafficSplitter
+        from m8_ab_testing_rag.ab_testing import TrafficSplitter
 
         splitter = TrafficSplitter()
         assignments = {"control": 0, "treatment": 0}
@@ -125,7 +130,7 @@ def test_assignment_consistency():
     print("=" * 60)
 
     try:
-        from l2_m8_ab_testing_rag_improvements import TrafficSplitter
+        from m8_ab_testing_rag.ab_testing import TrafficSplitter
 
         splitter = TrafficSplitter()
 
@@ -154,7 +159,7 @@ def test_rag_pipeline():
     print("=" * 60)
 
     try:
-        from l2_m8_ab_testing_rag_improvements import ABTestingRAGPipeline
+        from m8_ab_testing_rag.ab_testing import ABTestingRAGPipeline
 
         pipeline = ABTestingRAGPipeline()
 
@@ -189,7 +194,7 @@ def test_statistical_analysis():
     print("=" * 60)
 
     try:
-        from l2_m8_ab_testing_rag_improvements import (
+        from m8_ab_testing_rag.ab_testing import (
             ABTestingRAGPipeline,
             StatisticalAnalyzer
         )
@@ -234,7 +239,7 @@ def test_sample_size_calculation():
     print("=" * 60)
 
     try:
-        from l2_m8_ab_testing_rag_improvements import calculate_required_sample_size
+        from m8_ab_testing_rag.ab_testing import calculate_required_sample_size
 
         # Test with 3% effect size
         required_n = calculate_required_sample_size(
@@ -266,7 +271,7 @@ def test_rollout_controller():
     print("=" * 60)
 
     try:
-        from l2_m8_ab_testing_rag_improvements import RolloutController
+        from m8_ab_testing_rag.ab_testing import RolloutController
 
         controller = RolloutController()
         schedule = controller.create_rollout_schedule(
@@ -299,7 +304,7 @@ def test_graceful_degradation():
     print("=" * 60)
 
     try:
-        from l2_m8_ab_testing_rag_improvements import (
+        from m8_ab_testing_rag.ab_testing import (
             ExperimentManager,
             ABTestingRAGPipeline
         )

@@ -14,7 +14,7 @@ from pydantic import BaseModel, Field
 import uvicorn
 
 # Import our module
-from l2_m8_ab_testing_rag_improvements import (
+from m8_ab_testing_rag.ab_testing import (
     ExperimentConfig,
     ExperimentManager,
     TrafficSplitter,
@@ -23,7 +23,7 @@ from l2_m8_ab_testing_rag_improvements import (
     RolloutController,
     calculate_required_sample_size
 )
-import config
+import m8_ab_testing_rag.config
 
 # Configure logging
 logging.basicConfig(level=getattr(logging, config.LOG_LEVEL))
