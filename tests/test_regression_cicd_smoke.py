@@ -9,14 +9,21 @@ Minimal tests to verify:
 
 import pytest
 import sys
+import os
 from pathlib import Path
 import json
 
-# Add parent directory to path
-sys.path.insert(0, str(Path(__file__).parent))
+# Add src directory to path
+sys.path.insert(0, str(Path(__file__).parent.parent))
 
-import l2_regression_testing_cicd as reg_test
-import config
+import m8_regression_cicd.regression as reg_test
+import m8_regression_cicd.config as config
+
+# Skip guard for integration tests
+skip_integration = pytest.mark.skipif(
+    os.getenv('SKIP_INTEGRATION_TESTS', '').lower() == 'true',
+    reason="Integration tests skipped via SKIP_INTEGRATION_TESTS=true"
+)
 
 
 # ============================================================================
@@ -329,7 +336,11 @@ def test_estimate_cicd_costs_scaling():
 
 def test_example_data_exists():
     """Test that example data file exists and is valid JSON."""
-    data_file = Path("test_data/example_data.json")
+    # Try both old and new paths for backwards compatibility
+    data_file = Path("data/example_data.json")
+    if not data_file.exists():
+        data_file = Path("test_data/example_data.json")
+
     if data_file.exists():
         with open(data_file, 'r') as f:
             data = json.load(f)
@@ -343,6 +354,8 @@ def test_example_data_exists():
         assert 'question' in first_q
         assert 'expected_answer' in first_q
         assert 'contexts' in first_q
+    else:
+        pytest.skip("Example data file not found (optional for CI)")
 
 
 # ============================================================================

@@ -8,7 +8,7 @@ Provides REST API endpoints for:
 - Cost estimation
 - Decision helper
 
-No business logic here - all functionality imported from l2_regression_testing_cicd.py
+No business logic here - all functionality imported from reg_test.py
 """
 
 from fastapi import FastAPI, HTTPException, status
@@ -19,8 +19,8 @@ import logging
 from pathlib import Path
 
 # Import core module
-import l2_regression_testing_cicd as reg_test
-import config
+import m8_regression_cicd.regression as reg_test
+import m8_regression_cicd.config as config
 
 # Optional: Prometheus metrics
 try:

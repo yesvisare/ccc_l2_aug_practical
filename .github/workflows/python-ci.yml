@@ -1,0 +1,48 @@
+name: Python CI - Module 8.3
+
+on:
+  push:
+    branches: [ main, master, claude/* ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ['3.10', '3.11']
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Cache pip dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run tests
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+          SKIP_INTEGRATION_TESTS: 'true'
+        run: |
+          pytest -v tests/ --tb=short
+
+      - name: Test summary
+        if: always()
+        run: |
+          echo "Tests completed for Python ${{ matrix.python-version }}"
