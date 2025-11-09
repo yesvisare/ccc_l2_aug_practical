@@ -12,6 +12,39 @@ This module replaces insecure `.env` file secret management with centralized, au
 - Scan codebase and git history for accidentally committed secrets
 - Manage environment-specific secrets (dev/staging/prod) with proper isolation
 
+---
+
+## Learning Arc
+
+### Purpose
+
+This module teaches **enterprise-grade secrets management** to store API keys, database credentials, and tokens safely. Learn to implement **zero-downtime rotation** that swaps keys/tokens without dropping requests, minimizing blast radius when credentials leak. Move from risky `.env` files to centralized secret backends (HashiCorp Vault, AWS Secrets Manager, or file-based demo mode) with full audit trails and version control.
+
+### Concepts Covered
+
+- **Secret backends:** Start with env/file demo → optional cloud stores (Vault, AWS, GCP)
+- **KMS & envelope encryption:** Protect secrets at rest with key encryption keys
+- **Versioned secrets:** Track secret history, rollback to previous versions
+- **Rotation policy:** Define interval (days), grace period (overlap), minimum overlap hours
+- **Dry-run vs apply:** Test rotation logic without affecting production
+- **Audit hooks:** Log all secret access for compliance (ties to M6.4)
+- **Demo mode:** File-backed store + mock KMS for offline development (zero external calls)
+
+### After Completing This Module
+
+- Run a **dry-run rotation** to preview changes before applying
+- Rotate a **demo secret** with zero downtime (no failed requests)
+- Verify **consumers move to new versions** automatically
+- Export a **rotation report** showing old→new mappings and timestamps
+- Operate **offline** with file store + mock KMS (no cloud dependencies)
+
+### Context in L2 Track
+
+**Module 6: Enterprise Security & Compliance**
+M6.2 Secrets Management sits between **M6.1 PII Detection** (data protection) and **M6.3 RBAC** (access control). Ties to **M6.4 Compliance Auditing** via audit hooks. Complements **M5 Index Operations** (safe storage of vector DB credentials) and **M7 Distributed Tracing** (secret-aware observability).
+
+---
+
 ## Quickstart
 
 ### Prerequisites
@@ -335,6 +368,67 @@ You have 10-500 secrets across multiple environments, need audit trails for comp
 | Rotation downtime | 0 sec | 0 sec | 30 sec | 30 sec | 1-2 min |
 | Multi-cloud | ✅ Yes | ❌ AWS only | ❌ GCP only | ✅ Yes | ✅ Yes |
 
+## Environment Variables
+
+All configuration is managed through environment variables (mirrored in `.env.example`):
+
+### Core Configuration
+
+- `ENVIRONMENT` - Environment name: `dev`, `staging`, or `prod` (default: `dev`)
+- `SECRETS_BACKEND` - Secret store backend: `vault`, `aws`, `azure`, `gcp`, or `file` (default: `vault`)
+- `SECRETS_FILE_PATH` - Path to secrets file when using file backend (default: `.secrets.json`)
+
+### Vault Configuration
+
+- `VAULT_ADDR` - Vault server URL (default: `http://localhost:8200`)
+- `VAULT_TOKEN` - Vault authentication token (required for Vault backend)
+- `VAULT_MOUNT_POINT` - Vault mount point for KV engine (default: `secret`)
+
+### Rotation Policy
+
+- `ROTATION_INTERVAL_DAYS` - Days between automatic rotations (default: `30`)
+- `ROTATION_GRACE_DAYS` - Days of overlap when both old/new keys are valid (default: `1`)
+- `MIN_OVERLAP_HOURS` - Minimum hours before old key expires after rotation (default: `24`)
+- `ENABLE_ROTATION` - Enable automatic rotation: `true` or `false` (default: `true`)
+
+### Encryption (KMS)
+
+- `KMS_KEY_ID` - AWS KMS key ID or ARN (for AWS KMS envelope encryption)
+- `AWS_REGION` - AWS region for KMS (default: `us-east-1`)
+- `AZURE_KEY_VAULT_URL` - Azure Key Vault URL (for Azure Key Vault)
+- `GCP_KMS_PROJECT_ID` - GCP project ID (for GCP Cloud KMS)
+
+### Audit & Compliance
+
+- `AUDIT_EMIT` - Enable audit logging: `true` or `false` (default: `true`, ties to M6.4)
+- `AUDIT_BACKEND` - Audit log destination: `file`, `cloudwatch`, `datadog` (default: `file`)
+- `AUDIT_FILE_PATH` - Path to audit log file (default: `logs/audit.log`)
+
+### Feature Flags
+
+- `FALLBACK_TO_ENV` - Fall back to .env if secret store unavailable (default: `true`)
+- `ENABLE_METRICS` - Enable Prometheus metrics endpoint (default: `true`)
+- `SECRET_CACHE_TTL` - Secret cache TTL in seconds (default: `300`)
+- `SECRET_CACHE_MAXSIZE` - Max secrets in LRU cache (default: `128`)
+
+### Demo Mode
+
+When running without external dependencies (offline development):
+
+```bash
+# Windows (PowerShell)
+$env:SECRETS_BACKEND = "file"
+$env:SECRETS_FILE_PATH = ".secrets.json"
+python app.py
+
+# Linux/Mac
+export SECRETS_BACKEND=file
+export SECRETS_FILE_PATH=.secrets.json
+python app.py
+```
+
+Demo mode uses file-backed storage with mock KMS (no network calls, no cloud credentials required).
+
 ## Production Deployment Checklist
 
 Before going live:
@@ -402,15 +496,29 @@ python app.py
 
 ## Running Tests
 
+**Windows (PowerShell) - Quick Run:**
+```powershell
+powershell -c "$env:PYTHONPATH='$PWD/src;$PWD'; pytest -q"
+```
+
+**Linux/Mac - Quick Run:**
 ```bash
-# Run smoke tests
-pytest tests/test_smoke.py -v
+PYTHONPATH="$PWD/src:$PWD" pytest -q
+```
+
+**Detailed Test Commands:**
+```bash
+# Run smoke tests (verbose)
+PYTHONPATH="$PWD/src:$PWD" pytest tests/test_smoke.py -v
 
 # Run with coverage
-pytest tests/ --cov=m6_secrets --cov-report=html
+PYTHONPATH="$PWD/src:$PWD" pytest tests/ --cov=m6_secrets --cov-report=html
 
 # Run specific test
-pytest tests/test_smoke.py::TestVaultClient::test_vault_client_get_secret -v
+PYTHONPATH="$PWD/src:$PWD" pytest tests/test_smoke.py::TestVaultClient::test_vault_client_get_secret -v
+
+# Windows equivalent (PowerShell)
+$env:PYTHONPATH="$PWD/src;$PWD"; pytest tests/test_smoke.py -v
 ```
 
 ## Project Structure
