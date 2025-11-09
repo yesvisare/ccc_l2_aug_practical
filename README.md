@@ -1,3 +1,59 @@
+
+## Purpose
+
+Scientifically validate RAG system improvements before full production rollout using controlled A/B experiments with statistical rigor. This module provides a complete framework for testing configuration changes on subsets of traffic and making evidence-based deployment decisions.
+
+## Concepts Covered
+
+- A/B testing methodology for RAG systems
+- Statistical significance testing (Welch's t-test, bootstrap confidence intervals)
+- Traffic splitting with deterministic hashing for consistent user assignment
+- Gradual rollout strategies (canary deployments, 10% → 50% → 100%)
+- Sample size calculation and experimental design
+- Common failure modes: insufficient samples, selection bias, multiple testing, premature rollout
+- When NOT to use A/B testing (low traffic, multiple factors, obvious changes)
+
+## After Completing
+
+You will be able to:
+- Design and execute controlled experiments comparing RAG configurations
+- Calculate required sample sizes for detecting specific effect sizes
+- Implement traffic splitting logic with consistent user assignment
+- Analyze results with proper statistical significance testing (p-values, confidence intervals)
+- Make evidence-based rollout decisions backed by data
+- Avoid common A/B testing pitfalls that lead to false conclusions
+- Choose appropriate alternatives when A/B testing isn't suitable
+
+## Context in Track
+
+**Module 8.2: A/B Testing for RAG Improvements**
+
+Builds on M8.1 (RAGAS Evaluation) by adding experimental validation before deployment. Essential for production RAG systems where changes must be validated scientifically to minimize risk. Part of the Evaluation & Continuous Quality module series that ensures production reliability.
+
+### Windows-first Commands
+
+```powershell
+# Run API server
+$env:PYTHONPATH="$PWD/src"; uvicorn app:app --reload
+
+# Run tests
+$env:PYTHONPATH="$PWD/src"; pytest -q
+
+# Or use convenience scripts
+.\scriptsun_api.ps1
+.\scriptsun_tests.ps1
+```
+
+### Environment Variables
+
+See `.env.example` for all configuration options including:
+- API keys (OpenAI, Anthropic) - optional for demo mode
+- Database connection - optional, uses in-memory storage if not set
+- A/B testing parameters (traffic split, min sample size, significance level)
+- `SKIP_INTEGRATION_TESTS=true` - Skip tests requiring external services
+
+---
+
 # Module 8.2: A/B Testing for RAG Improvements
 
 Scientifically validate RAG system improvements before full production rollout using controlled experiments with statistical rigor.
