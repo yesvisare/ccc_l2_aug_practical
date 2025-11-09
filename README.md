@@ -6,6 +6,37 @@ This module provides production-grade tools for managing vector indexes with bac
 
 ---
 
+## Learning Arc
+
+### **Purpose**
+
+Production-grade vector index management with safe backup/restore workflows, zero-downtime blue-green deployments for model upgrades, verified migrations with sampling checks, and cost-aware operational patterns. Handles S3-backed point-in-time recovery, atomic traffic switching via Redis, namespace-scoped operations, and retention strategies—all designed to operate in demo mode without external services when API keys are absent.
+
+### **Concepts Covered**
+
+- **S3 Backups with Integrity Checks:** Batch export, gzip compression, MD5 checksum validation, metadata storage
+- **Zero-Downtime Blue-Green Deployments:** Parallel index provisioning, Redis-coordinated atomic traffic switching, instant rollback
+- **Verification During Migrations:** Sampling-based integrity checks (default 100 vectors), transformation hooks, dimension validation
+- **Namespace Handling:** Scoped backup/restore operations, multi-tenant isolation patterns
+- **Retention Strategy:** Rotation policies (daily/weekly/monthly), automated cleanup, versioned backups
+- **Cost Estimation Knobs:** Dual-index costs, storage/query/upsert tracking, budget thresholds
+- **Demo-Mode Operation:** Graceful degradation when API keys absent, offline cost calculations, workflow demonstrations without live indexes
+
+### **After Completing**
+
+- Create and verify S3-backed index backups with checksum validation
+- Restore indexes to a specific point-in-time from versioned backups
+- Execute zero-downtime traffic switches between blue/green index versions
+- Run migration dry-runs with transformation functions and sampling verification
+- Estimate dual-index costs across storage, queries, upserts, and data transfer
+- Operate all workflows in offline demo mode without external API keys
+
+### **Context in Track**
+
+M5.4 completes the **Production Data Management** track (L2), providing operational resilience for vector indexes. It builds on **M5.1 (Incremental Updates)** and **M5.2 (Data Validation)** by adding disaster recovery, zero-downtime deployment patterns, and migration verification. Together with **M5.3 (Monitoring)**, this establishes the foundation for hardened production RAG systems. The module precedes **M6 (Security & Compliance)** and **M7-M8 (Evaluation & Operations)**, where backup/migration strategies integrate with access control, audit logging, and continuous evaluation workflows.
+
+---
+
 ## Overview
 
 Managing vector indexes in production requires:
@@ -59,16 +90,30 @@ Validation: ✓ PASSED
 
 ### 4. Run Smoke Tests
 
+**Windows (PowerShell):**
+```powershell
+$env:PYTHONPATH = "$PWD/src"
+pytest tests/ -q
+```
+
+**Unix/Linux:**
 ```bash
-python tests_smoke.py
+PYTHONPATH=src pytest tests/ -q
 ```
 
 ### 5. Start API Server
 
-```bash
-python app.py
-# or
+**Windows (PowerShell):**
+```powershell
+.\scripts\run_api.ps1
+# or manually:
+$env:PYTHONPATH = "$PWD/src"
 uvicorn app:app --reload
+```
+
+**Unix/Linux:**
+```bash
+PYTHONPATH=src uvicorn app:app --reload
 ```
 
 Visit: http://localhost:8000/docs for interactive API documentation.
@@ -76,8 +121,44 @@ Visit: http://localhost:8000/docs for interactive API documentation.
 ### 6. Explore Jupyter Notebook
 
 ```bash
-jupyter notebook L2_M4_Vector_Index_Management.ipynb
+jupyter notebook L2_M5_4_Vector_Index_Management.ipynb
 ```
+
+---
+
+## Environment Variables
+
+All configuration is managed through environment variables (see `.env.example`):
+
+| Variable | Purpose | Required |
+|----------|---------|----------|
+| `PINECONE_API_KEY` | Pinecone API authentication | No (demo mode works without) |
+| `PINECONE_ENVIRONMENT` | Pinecone environment/region (default: us-west1-gcp) | No |
+| `AWS_ACCESS_KEY_ID` | AWS authentication for S3 backups | No (backup features disabled without) |
+| `AWS_SECRET_ACCESS_KEY` | AWS secret key for S3 | No |
+| `AWS_REGION` | AWS region for S3 bucket (default: us-east-1) | No |
+| `S3_BACKUP_BUCKET` | S3 bucket name for index backups | No |
+| `REDIS_HOST` | Redis host for blue-green coordination (default: localhost) | No |
+| `REDIS_PORT` | Redis port (default: 6379) | No |
+| `REDIS_PASSWORD` | Redis password (if required) | No |
+| `REDIS_DB` | Redis database number (default: 0) | No |
+| `DEFAULT_BATCH_SIZE` | Vectors per batch (default: 1000) | No |
+| `DEFAULT_DIMENSION` | Default vector dimension (default: 1536) | No |
+| `BACKUP_RETENTION_DAYS` | Days to retain backups (default: 30) | No |
+
+---
+
+## Demo-Mode Operation
+
+**When API keys are missing**, the module operates in demo mode:
+
+- **✓ Cost calculations** work offline (no external calls)
+- **✓ Workflow demonstrations** run without live indexes
+- **✓ Tests pass** with graceful skips for unavailable services
+- **✓ API endpoints** return `{"skipped": true, "reason": "..."}` instead of errors
+- **✓ Notebook cells** display skip messages for missing clients
+
+This allows learning and exploration without requiring paid services. Simply add API keys to `.env` when ready for production use.
 
 ---
 
