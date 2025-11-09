@@ -14,6 +14,42 @@ This module implements a production-ready RBAC system with:
 
 **Scale**: 10-5,000 users | **Cost**: $100-400/month infrastructure | **Implementation**: 8-12 hours
 
+---
+
+## 🎯 Purpose
+
+This module demonstrates how to enforce role and permission boundaries in production RAG systems through centralized authorization. You'll implement a policy-driven access control layer that gates document queries based on user roles, enforcing least-privilege principles. The system ensures that viewers can only read public documents, editors can modify internal content, and admins have full access to confidential data—all with comprehensive audit trails for compliance.
+
+## 📚 Concepts Covered
+
+- **Role-to-Permission Mapping**: Three-tier hierarchy (admin → editor → viewer) with inheritance
+- **Resource/Action Model**: Declarative policy defining who can perform what actions on which resources
+- **Policy Evaluation**: Casbin-based enforcement with <100ms overhead per authorization check
+- **FastAPI Dependency Injection**: `get_current_user` dependency resolving authenticated user context
+- **Deny-by-Default**: All actions forbidden unless explicitly allowed by policy
+- **Audit Hooks**: Permission check logging for compliance reporting (SOC2, ISO27001)
+- **Demo Mode**: File-based users and policies for offline development without external IdP
+
+## ✅ After Completing This Module
+
+- Define and load RBAC policies (roles, permissions, hierarchies)
+- Protect API endpoints with permission checks using FastAPI dependencies
+- Write and verify authorization tests covering all permission scenarios
+- Operate entirely offline with file-based user store and policy configuration
+- Understand when RBAC suffices vs. when ABAC or managed identity is needed
+
+## 🗺️ Context in Learning Track
+
+**Module 6: Enterprise Security & Compliance**
+
+This module sits between:
+- **M6.2 (Secrets Management)**: Protects database credentials used by RBAC system
+- **M6.4 (Compliance & Auditing)**: Consumes permission logs for compliance dashboards
+
+RBAC gates all document index and query operations, ensuring users only access data matching their clearance level. Documents with PII detected in M6.1 are automatically marked confidential, restricting access to admins only.
+
+---
+
 ## Quick Start
 
 ### 1. Install Dependencies
@@ -31,21 +67,33 @@ cp .env.example .env
 
 ### 3. Run the Demo
 
-```bash
-# Option A: Python script
-python l2_m6_rbac_multi-level_access.py
+**Windows (PowerShell - Recommended):**
+```powershell
+# Run API server
+powershell -c "$env:PYTHONPATH='$PWD/src;$PWD'; uvicorn app:app --reload"
 
-# Option B: Jupyter notebook
-jupyter notebook L2_M6_RBAC_Multi-Level_Access.ipynb
+# Run demo script
+./scripts/run_demo.ps1
 
-# Option C: FastAPI server
-python app.py
+# Run tests
+powershell -c "$env:PYTHONPATH='$PWD/src;$PWD'; pytest -q"
 ```
 
-### 4. Run Smoke Tests
-
+**Linux/Mac (Bash):**
 ```bash
-python tests_smoke.py
+# Run API server
+./scripts/run_api.sh
+
+# Run demo script
+./scripts/run_demo.sh
+
+# Run tests
+PYTHONPATH=$PWD/src:$PWD pytest -q
+```
+
+**Jupyter Notebook:**
+```bash
+jupyter notebook notebooks/L2_M6_RBAC_Multi-Level_Access.ipynb
 ```
 
 ## Architecture
@@ -367,27 +415,61 @@ Error: Policy file not found
 
 ### Environment Variables
 
-See `.env.example` for full configuration. Key variables:
+Configuration via `.env` file (copy from `.env.example`):
 
-```bash
-DATABASE_URL=postgresql://user:pass@host:5432/rbac_db
-PINECONE_API_KEY=your_key
-REDIS_HOST=localhost
-PERMISSION_CACHE_TTL=300
-```
+| Variable | Purpose | Default |
+|----------|---------|---------|
+| `DATABASE_URL` | PostgreSQL connection string for user/role persistence | `postgresql://localhost:5432/rbac_db` |
+| `PINECONE_API_KEY` | Pinecone API key for document-level filtering | (none - optional) |
+| `PINECONE_ENVIRONMENT` | Pinecone environment/region | (none - optional) |
+| `PINECONE_INDEX_NAME` | Target index for RBAC-filtered queries | `rbac-docs` |
+| `REDIS_HOST` | Redis host for permission caching | `localhost` |
+| `REDIS_PORT` | Redis port | `6379` |
+| `REDIS_DB` | Redis database number | `0` |
+| `CASBIN_MODEL_PATH` | Path to Casbin RBAC model file (auto-created if omitted) | (auto-generated) |
+| `PERMISSION_CACHE_TTL` | Seconds to cache permission decisions | `300` (5 min) |
+| `API_HOST` | API server bind address | `0.0.0.0` |
+| `API_PORT` | API server port | `8000` |
+| `ENABLE_METRICS` | Enable Prometheus metrics endpoint | `false` |
+| `LOG_LEVEL` | Logging verbosity (DEBUG/INFO/WARNING/ERROR) | `INFO` |
+
+**Demo Mode (No External Dependencies):**
+
+For local development/testing without PostgreSQL or Pinecone:
+- Uses SQLite in-memory database (no DATABASE_URL needed)
+- File-based user management via `example_data.json`
+- No external IdP/JWT integration required
+- Casbin policy auto-generated at runtime
+
+To run in demo mode, simply omit DATABASE_URL or use `sqlite:///rbac_demo.db`.
 
 ## Testing
 
-```bash
-# Run smoke tests
-python tests_smoke.py
+**Windows (PowerShell):**
+```powershell
+# Run all tests
+powershell -c "$env:PYTHONPATH='$PWD/src;$PWD'; pytest -q"
 
-# Run with pytest
-pytest tests_smoke.py -v
+# Verbose output
+powershell -c "$env:PYTHONPATH='$PWD/src;$PWD'; pytest tests/ -v"
 
 # Test coverage
-pytest --cov=l2_m6_rbac_multi-level_access tests_smoke.py
+powershell -c "$env:PYTHONPATH='$PWD/src;$PWD'; pytest --cov=m6_rbac tests/"
 ```
+
+**Linux/Mac (Bash):**
+```bash
+# Run all tests
+PYTHONPATH=$PWD/src:$PWD pytest -q
+
+# Verbose output
+PYTHONPATH=$PWD/src:$PWD pytest tests/ -v
+
+# Test coverage
+PYTHONPATH=$PWD/src:$PWD pytest --cov=m6_rbac tests/
+```
+
+All tests run offline by default using SQLite and file-based user management.
 
 ## Integration with Other Modules
 
