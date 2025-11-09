@@ -26,6 +26,13 @@ skip_integration = pytest.mark.skipif(
 )
 
 
+@pytest.fixture(autouse=True)
+def _skip_if_no_infra():
+    """Auto-skip all tests if SKIP_INTEGRATION_TESTS is set."""
+    if os.getenv('SKIP_INTEGRATION_TESTS', '').lower() == 'true':
+        pytest.skip('Integration tests skipped via SKIP_INTEGRATION_TESTS=true')
+
+
 # ============================================================================
 # CONFIGURATION TESTS
 # ============================================================================

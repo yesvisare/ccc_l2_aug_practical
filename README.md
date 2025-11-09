@@ -5,6 +5,68 @@
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
+## Purpose
+
+Prevent production quality degradation by automating regression testing for RAG systems. Learn to detect performance, accuracy, and cost regressions before deployment using CI/CD pipelines, model versioning, and safe deployment patterns.
+
+## Concepts Covered
+
+- **Regression Testing**: Automated test suites for RAG quality metrics (faithfulness, relevancy, precision, latency, cost)
+- **CI/CD for ML**: GitHub Actions workflows that block bad code from reaching production
+- **Model Versioning with DVC**: Track models/embeddings/prompts like code with instant rollback capability
+- **Safe Deployment**: Canary testing and automated rollback on quality degradation
+- **Test Stability**: Handling flaky tests and calibrating thresholds to avoid false positives
+- **Cost-Benefit Analysis**: Decision framework for when CI/CD is appropriate vs. overkill
+
+## After Completing
+
+You will be able to:
+- Build pytest-based regression test suites that run in <5 minutes for fast CI feedback
+- Set up GitHub Actions workflows that automatically test every pull request
+- Version ML models with DVC and S3, enabling instant rollback to any previous version
+- Implement canary deployments with automatic rollback on test failures
+- Calibrate regression thresholds using historical data to target 2-5% false positive rates
+- Make informed decisions about CI/CD adoption based on team size, deployment frequency, and budget
+
+## Context in Track
+
+**Prerequisites**: L1 M3 (Deployment), M8.1 (RAGAS Evaluation), M8.2 (A/B Testing)
+**Next Module**: M8.4 (Human-in-the-Loop Evaluation)
+**Level**: 2 (Intermediate)
+**Duration**: 35 minutes
+
+This module builds on RAGAS evaluation (M8.1) by automating quality checks in a CI/CD pipeline. It complements A/B testing (M8.2) by catching regressions before they reach production A/B experiments.
+
+---
+
+## Windows-first Commands
+
+**Run API server:**
+```powershell
+$env:PYTHONPATH="$PWD"; uvicorn app:app --reload
+```
+
+**Run tests:**
+```powershell
+$env:PYTHONPATH="$PWD"; pytest -v tests/
+```
+
+**Or use helper scripts:**
+```powershell
+.\scripts\run_api.ps1    # Start API server
+.\scripts\run_tests.ps1  # Run test suite
+```
+
+## Environment Variables
+
+See `.env.example` for all required environment variables:
+- `OPENAI_API_KEY` - Required for RAG query generation and evaluation
+- `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY` - Required for DVC S3 storage
+- `SKIP_INTEGRATION_TESTS` - Set to `true` to skip tests requiring external services
+- CI/CD variables: `CI`, `CI_COMMIT_SHA`, `CI_COMMIT_BRANCH`, `CI_RUN_NUMBER`
+
+---
+
 ## Overview
 
 This module implements automated regression testing and CI/CD for RAG (Retrieval Augmented Generation) systems. It prevents the horror scenario where "minor" changes compound to cause 40% quality drops in production.
