@@ -23,13 +23,13 @@ from pydantic import BaseModel, Field
 from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
 
 # Import core module and config
-from l2_m7_distributed_tracing_opentelemetry import (
+from m7_distributed_tracing.tracing import (
     setup_tracing,
     process_rag_query,
     get_trace_context,
     traced_operation
 )
-from config import tracing_config, app_config, validate_config
+from m7_distributed_tracing.config import tracing_config, app_config, validate_config
 
 # Configure logging
 logging.basicConfig(

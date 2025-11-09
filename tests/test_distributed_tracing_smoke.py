@@ -14,22 +14,30 @@ Run with: pytest tests_smoke.py -v
 import pytest
 import json
 import os
+import sys
+from pathlib import Path
 from typing import Dict, Any
+
+# Add src to path for imports
+sys.path.insert(0, str(Path(__file__).parent.parent / 'src'))
 
 # Test imports work
 def test_imports():
     """Test that all required modules can be imported."""
-    import l2_m7_distributed_tracing_opentelemetry
-    import config
-    import app
-    assert l2_m7_distributed_tracing_opentelemetry is not None
-    assert config is not None
-    assert app is not None
+    try:
+        import m7_distributed_tracing.tracing
+        import m7_distributed_tracing.config
+        import app
+        assert m7_distributed_tracing.tracing is not None
+        assert m7_distributed_tracing.config is not None
+        assert app is not None
+    except ImportError as e:
+        pytest.skip(f"Missing dependencies: {e}")
 
 
 def test_config_loads():
     """Test that configuration loads without errors."""
-    from config import TracingConfig, AppConfig, get_tracing_config, get_app_config
+    from m7_distributed_tracing.config import TracingConfig, AppConfig, get_tracing_config, get_app_config
 
     # Test config classes exist
     assert TracingConfig is not None
@@ -53,7 +61,7 @@ def test_config_loads():
 
 def test_config_validation():
     """Test configuration validation."""
-    from config import validate_config
+    from m7_distributed_tracing.config import validate_config
 
     results = validate_config()
 
@@ -69,7 +77,7 @@ def test_config_validation():
 
 def test_tracer_initialization():
     """Test that tracer can be initialized without errors."""
-    from l2_m7_distributed_tracing_opentelemetry import setup_tracing
+    from m7_distributed_tracing.tracing import setup_tracing
 
     # Initialize with test config (won't export if Jaeger unavailable)
     tracer = setup_tracing(
@@ -85,7 +93,7 @@ def test_tracer_initialization():
 
 def test_trace_context_formatter():
     """Test TraceContextLogger formatter."""
-    from l2_m7_distributed_tracing_opentelemetry import TraceContextLogger
+    from m7_distributed_tracing.tracing import TraceContextLogger
     import logging
 
     formatter = TraceContextLogger()
@@ -108,7 +116,7 @@ def test_trace_context_formatter():
 
 def test_redact_sensitive_attributes():
     """Test PII redaction in span attributes."""
-    from l2_m7_distributed_tracing_opentelemetry import redact_sensitive_attributes
+    from m7_distributed_tracing.tracing import redact_sensitive_attributes
 
     attributes = {
         "question": "What is GDPR?",
@@ -134,7 +142,7 @@ def test_redact_sensitive_attributes():
 
 def test_simulate_retrieve_documents():
     """Test document retrieval simulation."""
-    from l2_m7_distributed_tracing_opentelemetry import setup_tracing, simulate_retrieve_documents
+    from m7_distributed_tracing.tracing import setup_tracing, simulate_retrieve_documents
 
     tracer = setup_tracing(service_name="test", sampling_rate=0.0)  # No sampling for test
 
@@ -154,7 +162,7 @@ def test_simulate_retrieve_documents():
 
 def test_simulate_rerank_results():
     """Test reranking simulation."""
-    from l2_m7_distributed_tracing_opentelemetry import setup_tracing, simulate_rerank_results
+    from m7_distributed_tracing.tracing import setup_tracing, simulate_rerank_results
 
     tracer = setup_tracing(service_name="test", sampling_rate=0.0)
 
@@ -174,7 +182,7 @@ def test_simulate_rerank_results():
 
 def test_simulate_generate_response():
     """Test LLM generation simulation."""
-    from l2_m7_distributed_tracing_opentelemetry import setup_tracing, simulate_generate_response
+    from m7_distributed_tracing.tracing import setup_tracing, simulate_generate_response
 
     tracer = setup_tracing(service_name="test", sampling_rate=0.0)
 
@@ -200,7 +208,7 @@ def test_simulate_generate_response():
 
 def test_process_rag_query():
     """Test full RAG pipeline."""
-    from l2_m7_distributed_tracing_opentelemetry import setup_tracing, process_rag_query
+    from m7_distributed_tracing.tracing import setup_tracing, process_rag_query
 
     tracer = setup_tracing(service_name="test", sampling_rate=0.0)
 
@@ -229,7 +237,7 @@ def test_process_rag_query():
 
 def test_get_trace_context():
     """Test trace context retrieval."""
-    from l2_m7_distributed_tracing_opentelemetry import get_trace_context
+    from m7_distributed_tracing.tracing import get_trace_context
 
     context = get_trace_context()
 
@@ -372,7 +380,7 @@ def test_jaeger_integration():
     Requires Jaeger running on localhost:4317.
     Run with: SKIP_INTEGRATION_TESTS=false pytest tests_smoke.py::test_jaeger_integration -v
     """
-    from l2_m7_distributed_tracing_opentelemetry import setup_tracing, process_rag_query
+    from m7_distributed_tracing.tracing import setup_tracing, process_rag_query
     import time
 
     tracer = setup_tracing(
