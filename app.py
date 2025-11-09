@@ -10,12 +10,12 @@ import logging
 from datetime import datetime
 
 # Import our module functions
-from l2_m2_datapipelines_orchestration import (
+from m5_2_data_pipelines.core import (
     detect_changed_documents,
     run_incremental_refresh_pipeline
 )
 
-from config import (
+from m5_2_data_pipelines.config import (
     DATA_DIR,
     CHECKSUM_FILE,
     BATCH_SIZE,

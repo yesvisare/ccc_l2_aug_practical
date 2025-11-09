@@ -9,7 +9,7 @@ import json
 from pathlib import Path
 
 # Import functions to test
-from l2_m2_datapipelines_orchestration import (
+from m5_2_data_pipelines.core import (
     calculate_file_checksum,
     detect_changed_documents,
     chunk_document,
@@ -20,7 +20,7 @@ from l2_m2_datapipelines_orchestration import (
     run_incremental_refresh_pipeline
 )
 
-from config import validate_config, get_clients
+from m5_2_data_pipelines.config import validate_config, get_clients
 
 
 class TestConfiguration:
@@ -28,7 +28,7 @@ class TestConfiguration:
 
     def test_config_loads(self):
         """Test that config module loads without errors."""
-        from config import DATA_DIR, CHECKSUM_FILE, BATCH_SIZE
+        from m5_2_data_pipelines.config import DATA_DIR, CHECKSUM_FILE, BATCH_SIZE
         assert DATA_DIR is not None
         assert CHECKSUM_FILE is not None
         assert BATCH_SIZE > 0

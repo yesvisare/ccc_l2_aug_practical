@@ -535,7 +535,7 @@ if __name__ == "__main__":
     print("=== M5.2: Data Pipelines & Orchestration ===\n")
 
     # Load configuration
-    from config import (
+    from .config import (
         DATA_DIR, CHECKSUM_FILE, get_clients, validate_config
     )
 
