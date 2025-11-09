@@ -2,7 +2,7 @@
 FastAPI application for Secrets Management & Rotation module.
 
 This is the entrypoint for the web service. All business logic lives in
-l2_m6_secrets_management_rotation.py - this file only handles HTTP routing.
+m6_secrets package - this file only handles HTTP routing.
 
 Endpoints:
 - GET /health - Health check with Vault connectivity status
@@ -18,12 +18,12 @@ import logging
 import os
 from typing import Optional
 
-from l2_m6_secrets_management_rotation import (
+from m6_secrets.core import (
     VaultClient,
     ResilientVaultClient,
     SecretRotationManager
 )
-from config import AppConfig
+from m6_secrets.config import AppConfig
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)

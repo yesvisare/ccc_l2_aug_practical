@@ -100,7 +100,7 @@ def get_clients():
         return clients
 
     try:
-        from l2_m6_secrets_management_rotation import VaultClient
+        from m6_secrets.core import VaultClient
 
         # Initialize Vault client
         vault_client = VaultClient(

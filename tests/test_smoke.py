@@ -5,7 +5,7 @@ These tests verify basic functionality without requiring external services.
 Network calls are gracefully skipped if Vault is not available.
 
 Run with:
-    pytest tests_smoke.py -v
+    pytest tests/test_smoke.py -v
 """
 
 import pytest
@@ -13,8 +13,8 @@ import os
 from unittest.mock import Mock, patch, MagicMock
 
 # Import modules to test
-from config import AppConfig, VaultConfig, get_clients
-from l2_m6_secrets_management_rotation import (
+from m6_secrets.config import AppConfig, VaultConfig, get_clients
+from m6_secrets.core import (
     VaultClient,
     ResilientVaultClient,
     SecretRotationManager,

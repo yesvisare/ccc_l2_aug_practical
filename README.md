@@ -68,11 +68,22 @@ docker exec vault-dev vault kv get secret/rag-system/dev
 
 ### Run the Application
 
+**Using provided scripts (recommended):**
+```bash
+# Windows (PowerShell)
+powershell scripts/run_api.ps1
+
+# Linux/Mac
+bash scripts/run_api.sh
+```
+
+**Or manually:**
 ```bash
 # Set environment
 export VAULT_ADDR=http://localhost:8200
 export VAULT_TOKEN=dev-root-token
 export ENVIRONMENT=dev
+export PYTHONPATH="$PWD/src:$PWD"
 
 # Run FastAPI application
 python app.py
@@ -393,26 +404,37 @@ python app.py
 
 ```bash
 # Run smoke tests
-pytest tests_smoke.py -v
+pytest tests/test_smoke.py -v
 
 # Run with coverage
-pytest tests_smoke.py --cov=l2_m6_secrets_management_rotation --cov-report=html
+pytest tests/ --cov=m6_secrets --cov-report=html
 
 # Run specific test
-pytest tests_smoke.py::TestVaultClient::test_vault_client_get_secret -v
+pytest tests/test_smoke.py::TestVaultClient::test_vault_client_get_secret -v
 ```
 
 ## Project Structure
 
 ```
-├── l2_m6_secrets_management_rotation.py  # Core module (VaultClient, rotation logic)
-├── config.py                              # Configuration and environment validation
-├── app.py                                 # FastAPI entrypoint
+├── src/
+│   └── m6_secrets/                        # Main package
+│       ├── __init__.py                    # Package exports
+│       ├── core.py                        # Core module (VaultClient, rotation logic)
+│       └── config.py                      # Configuration and environment validation
+├── tests/
+│   ├── __init__.py                        # Tests package
+│   └── test_smoke.py                      # Smoke tests
+├── scripts/
+│   ├── run_api.ps1                        # Windows: Run FastAPI server
+│   ├── run_api.sh                         # Linux/Mac: Run FastAPI server
+│   ├── rotate_demo.ps1                    # Windows: Rotation demo
+│   └── rotate_demo.sh                     # Linux/Mac: Rotation demo
+├── notebooks/
+│   └── L2_M6_Secrets_Management_Rotation.ipynb  # Jupyter notebook walkthrough
+├── app.py                                 # FastAPI entrypoint (thin routing layer)
 ├── requirements.txt                       # Dependencies
 ├── .env.example                           # Environment template
 ├── example_data.json                      # Sample secrets and scenarios
-├── tests_smoke.py                         # Smoke tests
-├── L2_M6_Secrets_Management_Rotation.ipynb  # Jupyter notebook walkthrough
 └── README.md                              # This file
 ```
 
