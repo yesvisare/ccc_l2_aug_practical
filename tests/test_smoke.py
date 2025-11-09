@@ -11,10 +11,7 @@ import shutil
 from pathlib import Path
 import pytest
 
-# Add parent directory to path for imports
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-
-from l2_m5_1_incremental_indexing import (
+from m5_1_incremental_indexing import (
     ChangeDetector,
     IncrementalIndexer,
     IndexVersionManager,
@@ -23,7 +20,7 @@ from l2_m5_1_incremental_indexing import (
     DocumentState,
     ChangeReport
 )
-import config
+from m5_1_incremental_indexing import config
 
 
 class TestChangeDetector:

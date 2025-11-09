@@ -19,13 +19,13 @@ from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 
 # Import core module functions
-from l2_m5_1_incremental_indexing import (
+from m5_1_incremental_indexing import (
     ChangeDetector,
     IncrementalIndexer,
     IndexVersionManager,
     simple_chunk_function
 )
-import config
+from m5_1_incremental_indexing import config
 
 # Setup logging
 logging.basicConfig(level=logging.INFO)

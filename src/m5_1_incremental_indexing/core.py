@@ -600,19 +600,19 @@ if __name__ == "__main__":
 
     Usage:
         # Detect changes only
-        python l2_m5_1_incremental_indexing.py detect ./documents
+        python -m m5_1_incremental_indexing.core detect ./documents
 
         # Run full incremental update (requires Pinecone)
-        python l2_m5_1_incremental_indexing.py update ./documents
+        python -m m5_1_incremental_indexing.core update ./documents
 
         # Create version snapshot
-        python l2_m5_1_incremental_indexing.py snapshot
+        python -m m5_1_incremental_indexing.core snapshot
 
         # List available snapshots
-        python l2_m5_1_incremental_indexing.py list-snapshots
+        python -m m5_1_incremental_indexing.core list-snapshots
 
         # Rollback to snapshot
-        python l2_m5_1_incremental_indexing.py rollback 20250107_143022
+        python -m m5_1_incremental_indexing.core rollback 20250107_143022
     """
     import sys
     from glob import glob
@@ -625,7 +625,7 @@ if __name__ == "__main__":
 
     if command == "detect":
         if len(sys.argv) < 3:
-            print("Usage: python l2_m5_1_incremental_indexing.py detect <documents_dir>")
+            print("Usage: python -m m5_1_incremental_indexing.core detect <documents_dir>")
             sys.exit(1)
 
         docs_dir = sys.argv[2]
@@ -655,7 +655,7 @@ if __name__ == "__main__":
 
     elif command == "rollback":
         if len(sys.argv) < 3:
-            print("Usage: python l2_m5_1_incremental_indexing.py rollback <snapshot_id>")
+            print("Usage: python -m m5_1_incremental_indexing.core rollback <snapshot_id>")
             sys.exit(1)
 
         snapshot_id = sys.argv[2]

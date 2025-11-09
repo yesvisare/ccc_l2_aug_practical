@@ -121,7 +121,7 @@ def get_embedding_function(client=None):
     if client is None:
         # Return mock embedding function
         logger.warning("Using mock embedding function (no OpenAI API key)")
-        from l2_m5_1_incremental_indexing import mock_embedding_function
+        from .core import mock_embedding_function
         return mock_embedding_function
 
     def embed(text: str):
@@ -160,7 +160,7 @@ def get_clients():
         clients['embed_fn'] = get_embedding_function(openai_client)
     else:
         # Use mock embedding
-        from l2_m5_1_incremental_indexing import mock_embedding_function
+        from .core import mock_embedding_function
         clients['embed_fn'] = mock_embedding_function
 
     return clients
