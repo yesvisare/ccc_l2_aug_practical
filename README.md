@@ -6,6 +6,35 @@
 
 ---
 
+## Purpose
+
+This module teaches you to orchestrate automated RAG data refresh pipelines using Apache Airflow. You'll learn to schedule updates (daily, hourly, or on-demand), implement parallel processing to reduce refresh time from 40 minutes to 8 minutes for 5,000 documents, handle pipeline failures gracefully with automatic retries, and monitor pipeline health with metrics that pinpoint bottlenecks.
+
+## Concepts Covered
+
+- **Checksum-based change detection** — Identify new, modified, and deleted documents without full re-indexing
+- **Batching & parallelism** — Process documents in batches across multiple workers for efficiency
+- **Targeted upserts** — Update only changed vectors in Pinecone, preserving unchanged data
+- **Deletion handling** — Remove vectors for deleted documents automatically
+- **Scheduling options** — Automate with cron jobs, Airflow DAGs, or manual triggers
+- **Alerting & retries** — Implement exponential backoff and failure notifications
+- **Demo-mode operation** — Run pipeline without API keys for testing and development
+
+## After Completing This Module
+
+You will be able to:
+- Run `detect_changed_documents()` to identify files requiring updates
+- Execute `run_incremental_refresh_pipeline()` to process changes end-to-end
+- Monitor pipeline status via FastAPI endpoints (`/health`, `/status`)
+- Operate in offline mode (demo mode) when API keys are unavailable
+- Prepare for M5.3 (Data Quality & Validation) where you'll add quality checks to this pipeline
+
+## Context in Track
+
+**M5.2: Data Pipelines & Orchestration** sits within **Level 2: Production Data Management**. It builds directly on **M5.1 (Incremental Indexing)** by automating the manual refresh process. The pipelines you build here feed into **M5.3 (Data Quality & Validation)** for quality checks and **M8 (Evaluation & Testing)** for A/B testing different refresh strategies. This module is critical for production RAG systems that must stay synchronized with evolving document sources.
+
+---
+
 ## Overview
 
 This module teaches Apache Airflow orchestration for automated RAG data refresh pipelines. You'll learn how to schedule automated data refreshes, implement parallel processing, handle failures gracefully, and monitor pipeline health.
@@ -60,10 +89,28 @@ jupyter notebook L2_M2_DataPipelines_Orchestration.ipynb
 
 ### 4. Or Use the API
 
+**Windows (PowerShell):**
+```powershell
+# Start the FastAPI server
+.\scripts\run_api.ps1
+
+# Or manually:
+$env:PYTHONPATH = "$PWD/src;$PWD"
+uvicorn app:app --reload
+```
+
+**Unix/Linux/macOS:**
 ```bash
 # Start the FastAPI server
-python app.py
+./scripts/run_api.sh
 
+# Or manually:
+export PYTHONPATH="$PWD/src:$PWD"
+uvicorn app:app --reload
+```
+
+**Test the API:**
+```bash
 # In another terminal, trigger a refresh
 curl -X POST http://localhost:8000/refresh
 
@@ -73,9 +120,28 @@ curl http://localhost:8000/status
 
 ### 5. Run Tests
 
-```bash
-pytest tests_smoke.py -v
+**Windows (PowerShell):**
+```powershell
+$env:PYTHONPATH = "$PWD/src;$PWD"
+pytest tests/ -q
 ```
+
+**Unix/Linux/macOS:**
+```bash
+export PYTHONPATH="$PWD/src:$PWD"
+pytest tests/ -q
+```
+
+### 6. Demo Mode (No API Keys)
+
+**The pipeline works without API keys!** If `OPENAI_API_KEY` or `PINECONE_API_KEY` are missing:
+- ✅ Change detection runs normally (checksum comparison)
+- ✅ Document chunking works locally
+- ⚠️ Embedding generation is skipped (prints warning)
+- ⚠️ Vector upserts are skipped (prints warning)
+- ✅ Pipeline completes successfully with status report
+
+This allows you to test the orchestration logic, scheduling, and monitoring without external dependencies.
 
 ---
 
@@ -122,6 +188,42 @@ pytest tests_smoke.py -v
 - **Scheduler:** Monitors DAGs and triggers execution when conditions met
 - **Executor:** Determines how tasks run (sequential vs. parallel)
 - **XCom:** Cross-communication mechanism for passing data between tasks
+
+---
+
+## Environment Variables
+
+Configure the pipeline by setting these variables in `.env` (copy from `.env.example`):
+
+### OpenAI Configuration
+- `OPENAI_API_KEY` — API key for generating embeddings (required for production)
+- `OPENAI_EMBEDDING_MODEL` — Embedding model to use (default: text-embedding-3-small)
+
+### Pinecone Configuration
+- `PINECONE_API_KEY` — API key for vector database access (required for production)
+- `PINECONE_ENVIRONMENT` — Pinecone environment region (default: us-west1-gcp)
+- `PINECONE_INDEX_NAME` — Name of the vector index (default: rag-documents)
+
+### Airflow Configuration
+- `AIRFLOW_HOME` — Airflow installation directory (default: ~/airflow)
+- `AIRFLOW_DAGS_FOLDER` — Directory containing DAG definitions (default: ~/airflow/dags)
+- `AIRFLOW_DB_URL` — Database connection string for metadata storage
+
+### Pipeline Configuration
+- `DATA_DIR` — Directory containing documents to process (default: ./data/documents)
+- `CHECKSUM_FILE` — File storing checksums for change detection (default: ./data/checksums.json)
+- `BATCH_SIZE` — Number of documents to process per batch (default: 100)
+- `MAX_WORKERS` — Number of parallel workers for processing (default: 4)
+- `CHUNK_SIZE` — Target size of document chunks in characters (default: 512)
+- `CHUNK_OVERLAP` — Overlap between consecutive chunks (default: 50)
+
+### Retry Configuration
+- `MAX_RETRIES` — Maximum retry attempts for failed tasks (default: 3)
+- `RETRY_DELAY_SECONDS` — Delay between retry attempts (default: 60)
+
+### Alerting Configuration (Optional)
+- `ALERT_EMAIL` — Email address for failure notifications
+- `SLACK_WEBHOOK_URL` — Slack webhook for pipeline alerts
 
 ---
 
