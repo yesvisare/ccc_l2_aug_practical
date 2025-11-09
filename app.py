@@ -11,7 +11,7 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 
 # Import module functions
-from l2_m6_compliance_audit_logging import (
+from m6_4_compliance_audit.core import (
     AuditEvent,
     AuditEventType,
     AuditOutcome,
@@ -19,7 +19,7 @@ from l2_m6_compliance_audit_logging import (
     GDPRCompliance,
     RetentionPolicy,
 )
-from config import get_elasticsearch_client, config
+from m6_4_compliance_audit.config import get_elasticsearch_client, config
 
 # Configure logging
 logging.basicConfig(level=config.LOG_LEVEL)

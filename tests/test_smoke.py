@@ -8,7 +8,7 @@ import json
 import os
 from datetime import datetime
 
-from l2_m6_compliance_audit_logging import (
+from m6_4_compliance_audit.core import (
     AuditEvent,
     AuditEventType,
     AuditOutcome,
@@ -16,7 +16,7 @@ from l2_m6_compliance_audit_logging import (
     GDPRCompliance,
     RetentionPolicy,
 )
-from config import Config
+from m6_4_compliance_audit.config import Config
 
 
 def test_config_loads():
