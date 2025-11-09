@@ -38,7 +38,7 @@ except ImportError:
     PRESIDIO_AVAILABLE = False
     logging.warning("Presidio not available. PII detection will be disabled.")
 
-from config import config
+from .config import config
 
 
 # Custom logging filter for PII masking in logs

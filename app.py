@@ -3,7 +3,7 @@ FastAPI application for PII Detection & Redaction service.
 Module entrypoint with REST API endpoints.
 
 No business logic in this file - all functionality imported from
-l2_m6_pii_detection_redaction.py
+m6_pii_detection_redaction package.
 """
 
 import logging
@@ -14,8 +14,8 @@ from fastapi import FastAPI, HTTPException, status
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 
-from config import config
-from l2_m6_pii_detection_redaction import (
+from m6_pii_detection_redaction.config import config
+from m6_pii_detection_redaction import (
     PIIDetector,
     RedactionStrategy,
     CustomRecognizerFactory,
@@ -333,7 +333,7 @@ async def redact_batch(request: BatchRedactionRequest):
         )
 
     try:
-        from l2_m6_pii_detection_redaction import process_documents_parallel
+        from m6_pii_detection_redaction import process_documents_parallel
 
         # Parse strategy
         strategy_map = {

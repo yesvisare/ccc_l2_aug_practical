@@ -8,14 +8,9 @@ Minimal tests to verify:
 """
 
 import pytest
-import sys
-from pathlib import Path
 
-# Add parent directory to path for imports
-sys.path.insert(0, str(Path(__file__).parent))
-
-from config import config, Config
-from l2_m6_pii_detection_redaction import (
+from m6_pii_detection_redaction.config import config, Config
+from m6_pii_detection_redaction import (
     PIIDetector,
     RedactionStrategy,
     GDPRDeletionService,
