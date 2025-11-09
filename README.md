@@ -1,3 +1,73 @@
+
+## Purpose
+
+Production-ready implementation of Human-in-the-Loop (HITL) evaluation for RAG systems. Integrates human feedback into automated evaluation pipelines to close the quality gap between technical metrics and real user satisfaction.
+
+## Concepts Covered
+
+- Feedback collection APIs (thumbs up/down, ratings, comments)
+- Active learning prioritization (uncertainty sampling + diversity clustering)
+- Inter-annotator agreement measurement (Cohen's Kappa, Krippendorff's Alpha)
+- Label Studio integration for structured annotation
+- Feedback loop closure and retraining pipelines
+
+## After Completing
+
+You will understand how to:
+- Deploy feedback collection endpoints in production
+- Select high-value queries for human annotation using active learning
+- Measure annotation quality with IAA metrics (target: >0.70)
+- Close the feedback loop to improve RAG systems
+- Avoid common failure modes (feedback bias, low IAA, bottlenecks)
+
+## Context in Track
+
+Module 8.4 builds on:
+- M8.1 (RAGAS): Automated evaluation metrics
+- M8.2 (A/B Testing): Comparing system variants
+- M8.3 (CI/CD): Regression testing
+
+This module completes the evaluation toolkit by adding human judgment to validate and improve automated metrics.
+
+### Windows-first Commands
+
+```powershell
+# Run API
+$env:PYTHONPATH="$PWD/src;$PWD"; uvicorn app:app --reload
+
+# Run tests
+$env:PYTHONPATH="$PWD/src;$PWD"; python3 -m pytest tests/ -q
+
+# Or use scripts
+.\scripts
+un_api.ps1
+.\scripts
+un_tests.ps1
+```
+
+### Unix/Mac Commands
+
+```bash
+# Run API
+export PYTHONPATH="$PWD/src:$PWD" && uvicorn app:app --reload
+
+# Run tests
+export PYTHONPATH="$PWD/src:$PWD" && python3 -m pytest tests/ -q
+
+# Or use scripts
+bash scripts/run_api.sh
+bash scripts/run_tests.sh
+```
+
+### Environment Variables
+
+See `.env.example` for all configuration options. Key variables:
+- `SKIP_INTEGRATION_TESTS`: Set to `true` to skip tests requiring external services
+- `DB_PATH`: SQLite database path for feedback storage
+- `LABEL_STUDIO_URL`, `LABEL_STUDIO_API_KEY`: Optional Label Studio integration
+
+---
+
 # Module 8.4: Human-in-the-Loop (HITL) Evaluation
 
 Production-ready implementation of human-in-the-loop evaluation for RAG systems. Integrates human feedback into automated evaluation pipelines to close the quality gap between technical metrics and real user satisfaction.

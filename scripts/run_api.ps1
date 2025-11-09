@@ -1,1 +1,2 @@
-$env:PYTHONPATH="$PWD"; uvicorn app:app --reload
+$env:PYTHONPATH="$PWD/src;$PWD"
+uvicorn app:app --reload

@@ -15,8 +15,7 @@ import tempfile
 import numpy as np
 from datetime import datetime
 
-# Add parent directory to path
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+# Note: Ensure PYTHONPATH includes src/ directory when running tests
 
 from m8_hitl_eval.hitl import (
     FeedbackCollector,
@@ -271,3 +270,10 @@ def run_all_tests():
 if __name__ == "__main__":
     success = run_all_tests()
     sys.exit(0 if success else 1)
+
+@pytest.fixture(autouse=True)
+def _skip_if_no_infra():
+    """Skip all tests if SKIP_INTEGRATION_TESTS is set."""
+    if os.getenv('SKIP_INTEGRATION_TESTS', '').lower() == 'true':
+        pytest.skip('Integration tests skipped via SKIP_INTEGRATION_TESTS=true')
+

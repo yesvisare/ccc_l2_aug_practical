@@ -1,3 +1,3 @@
 #!/bin/bash
-export PYTHONPATH="$PWD"
+export PYTHONPATH="$PWD/src:$PWD"
 uvicorn app:app --reload
