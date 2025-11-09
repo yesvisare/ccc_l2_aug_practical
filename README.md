@@ -2,6 +2,34 @@
 
 Production-ready audit logging system with tamper-proof trails, GDPR automation, and retention policies for RAG applications.
 
+## Purpose
+
+Build tamper-proof audit trails using SHA-256 hash chaining to prove data access integrity for GDPR, HIPAA, and SOC 2 compliance. Automate GDPR export and erasure workflows that reduce manual audit work from 40 hours to under 1 hour. Enforce retention policies by data classification (confidential: 7 years, internal: 3 years) with automated deletion. Includes fallback storage for offline operation when Elasticsearch is unavailable.
+
+## Concepts Covered
+
+- **Event taxonomy:** 14 auditable event types (login, document access, PII detection, GDPR requests, consent tracking)
+- **SHA-256 hash chaining:** Blockchain-style tamper detection linking each event to previous via cryptographic hash
+- **Elasticsearch time-series indices:** Monthly index rollover (audit-logs-2024-11) with automated lifecycle management
+- **Fallback storage:** Local JSONL file backup when Elasticsearch unavailable, ensuring zero event loss
+- **GDPR export flows:** Article 20 (Right to Portability) automated data export for user access requests
+- **GDPR erasure flows:** Article 17 (Right to Erasure) with configurable retention delay before deletion
+- **Retention windows by classification:** Confidential (7yr), Internal (3yr), Public (1yr), Security-critical (10yr)
+- **Chain verification:** Daily integrity checks detecting hash mismatches indicating tampering
+- **Demo mode:** Fully offline operation using fallback storage when external services unavailable
+
+## After Completing
+
+- **Emit and verify audit events:** Create tamper-proof events with hash chaining and verify chain integrity across time ranges
+- **Export user data (GDPR Article 20):** Generate complete audit trail export for user access requests within 30-day window
+- **Erase user data (GDPR Article 17):** Safely delete user events after configurable retention period with deletion audit trail
+- **Apply retention policies:** Enforce automated deletion by data classification without manual intervention
+- **Run entirely offline:** Use local fallback storage (audit-fallback.jsonl) when Elasticsearch unavailable, preserving all functionality
+
+## Context in Track
+
+**Position:** Module 6.4 within Level 2 Compliance & Operations track. Follows Module 5 (Data Management & Pipelines) which established data quality foundations. This module builds the compliance infrastructure required for production RAG systems handling regulated data (PII, healthcare, financial). **Prerequisites:** M6.1 (PII Detection) for sensitive data classification, M6.2 (Secrets Management) for secure credential handling, M6.3 (RBAC) for access control. **Leads to:** Module 7 (Observability & Monitoring) for operational visibility and Module 8 (Quality & Testing) for validation. Supports legal/regulatory readiness (GDPR, HIPAA, SOC 2) required before production deployment.
+
 ## Overview
 
 This module implements comprehensive compliance audit logging using the ELK stack (Elasticsearch, Logstash, Kibana) with:
@@ -35,8 +63,14 @@ cp .env.example .env
 
 ### 3. Run the API
 
+**Windows (PowerShell):**
+```powershell
+powershell -c "$env:PYTHONPATH='$PWD'; uvicorn app:app --reload"
+```
+
+**Linux/macOS:**
 ```bash
-python app.py
+PYTHONPATH=. python app.py
 ```
 
 Visit http://localhost:8000/docs for interactive API documentation.
@@ -44,13 +78,19 @@ Visit http://localhost:8000/docs for interactive API documentation.
 ### 4. Explore the Notebook
 
 ```bash
-jupyter notebook L2_M6_Compliance_Audit_Logging.ipynb
+jupyter notebook notebooks/L2_M6_4_Compliance_Audit_Logging.ipynb
 ```
 
 ### 5. Run Tests
 
+**Windows (PowerShell):**
+```powershell
+powershell -c "$env:PYTHONPATH='$PWD'; pytest -q"
+```
+
+**Linux/macOS:**
 ```bash
-pytest tests_smoke.py -v
+PYTHONPATH=. pytest tests/ -v
 ```
 
 ## How It Works
@@ -104,6 +144,62 @@ pytest tests_smoke.py -v
 - **Internal:** 3 years (1,095 days)
 - **Public:** 1 year (365 days)
 - **Security-critical:** 10 years (3,650 days)
+
+## Environment Variables
+
+Configuration via `.env` file (see `.env.example`):
+
+**Elasticsearch Configuration:**
+- `ELASTICSEARCH_HOST` - Elasticsearch server hostname (default: localhost)
+- `ELASTICSEARCH_PORT` - Elasticsearch server port (default: 9200)
+- `ELASTICSEARCH_SCHEME` - Connection protocol, http or https (default: http)
+- `ELASTICSEARCH_USER` - Username for Elasticsearch authentication (optional)
+- `ELASTICSEARCH_PASSWORD` - Password for Elasticsearch authentication (optional)
+- `ELASTICSEARCH_INDEX_PREFIX` - Prefix for time-series indices (default: audit-logs)
+
+**Audit Logging Configuration:**
+- `AUDIT_ENABLE_HASH_CHAIN` - Enable SHA-256 hash chaining for tamper detection (default: true)
+- `AUDIT_BATCH_SIZE` - Number of events to batch before bulk insert (default: 100)
+- `AUDIT_FLUSH_INTERVAL` - Seconds between automatic batch flushes (default: 30)
+
+**Data Retention Configuration (in days):**
+- `RETENTION_CONFIDENTIAL` - Retention period for confidential data (default: 2555 = 7 years)
+- `RETENTION_INTERNAL` - Retention period for internal data (default: 1095 = 3 years)
+- `RETENTION_PUBLIC` - Retention period for public data (default: 365 = 1 year)
+- `RETENTION_SECURITY_CRITICAL` - Retention period for security-critical events (default: 3650 = 10 years)
+
+**GDPR Configuration:**
+- `GDPR_EXPORT_TIMEOUT_DAYS` - Maximum days to fulfill data export request (default: 30)
+- `GDPR_DELETION_DELAY_DAYS` - Grace period before permanent deletion (default: 7)
+
+**Application Configuration:**
+- `LOG_LEVEL` - Logging verbosity: DEBUG, INFO, WARNING, ERROR (default: INFO)
+
+## Demo Mode
+
+When Elasticsearch is unavailable or not configured, the system automatically operates in **demo mode**:
+
+**Fallback Storage:**
+- Events stored in local file: `audit-fallback.jsonl`
+- One JSON event per line, append-only format
+- Preserves all event data including hash chains
+
+**Features Available in Demo Mode:**
+- ✅ Emit audit events with full event taxonomy
+- ✅ Hash chaining and tamper detection
+- ✅ GDPR consent tracking (stored to fallback)
+- ✅ All event types (login, document access, PII, etc.)
+
+**Features Limited in Demo Mode:**
+- ⚠️ GDPR export returns empty results (no queryable index)
+- ⚠️ GDPR deletion skipped (no index to delete from)
+- ⚠️ Retention enforcement skipped (no time-series indices)
+- ⚠️ Chain verification limited (reads from fallback file)
+
+**Switching to Production:**
+1. Configure Elasticsearch environment variables in `.env`
+2. Restart application - automatic detection
+3. Optionally import fallback events: `python scripts/import_fallback.py`
 
 ## API Endpoints
 
