@@ -1,0 +1,3 @@
+# Run the FastAPI application with auto-reload
+$env:PYTHONPATH = "$PWD"
+uvicorn app:app --reload --host 0.0.0.0 --port 8080

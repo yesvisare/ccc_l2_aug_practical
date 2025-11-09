@@ -9,8 +9,8 @@ from datetime import datetime, timedelta
 import pandas as pd
 import numpy as np
 
-from config import Config, get_clients
-from l2_m7_intelligent_alerting import (
+from src.m7_intelligent_alerting_workspace.config import Config, get_clients
+from src.m7_intelligent_alerting_workspace.core import (
     AnomalyDetector,
     AlertAggregator,
     PagerDutyIntegration,

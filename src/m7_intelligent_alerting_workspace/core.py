@@ -20,7 +20,7 @@ import pandas as pd
 import numpy as np
 from prophet import Prophet
 
-from config import Config, DEFAULT_BASELINE_DAYS, ANOMALY_SEVERITY_LEVELS
+from .config import Config, DEFAULT_BASELINE_DAYS, ANOMALY_SEVERITY_LEVELS
 
 # Configure logging
 logging.basicConfig(
@@ -526,7 +526,7 @@ def fetch_prometheus_metrics(
         raise ConnectionError(f"Prometheus unavailable: {e}")
 
 
-def load_example_data(file_path: str = "example_data.json") -> Dict[str, Any]:
+def load_example_data(file_path: str = "data/example_data.json") -> Dict[str, Any]:
     """
     Load example data from JSON file.
 
