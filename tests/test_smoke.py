@@ -16,8 +16,8 @@ import pytest
 from fastapi.testclient import TestClient
 
 # Import modules to test
-import config
-import l2_m7_custom_business_metrics as metrics_module
+from src.m7_custom_business_metrics import config
+from src.m7_custom_business_metrics import core as metrics_module
 from app import app
 
 
@@ -397,7 +397,7 @@ def test_prometheus_metrics_endpoint():
 
 def test_example_data_loads():
     """Test that example data file is valid JSON."""
-    example_file = os.path.join(os.path.dirname(__file__), 'example_data.json')
+    example_file = os.path.join(os.path.dirname(__file__), '..', 'data', 'example_data.json')
 
     assert os.path.exists(example_file), "example_data.json not found"
 
