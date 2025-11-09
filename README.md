@@ -2,6 +2,34 @@
 
 > **Module 5: Production Data Management** - Efficient vector database updates without full re-indexing
 
+## Purpose
+
+This lesson teaches you how to avoid re-indexing entire document corpora when only a few documents change. Instead of re-processing 10,000 documents when one is modified, you'll implement SHA-256 checksum-based change detection and update only changed chunks in your vector database. You'll achieve 99.75% time savings and 99.8% cost reduction compared to full re-indexing.
+
+## Concepts Covered
+
+- **Checksum-based change detection**: SHA-256 hashing to identify new, modified, deleted, and unchanged documents
+- **Chunk diffing**: Comparing document chunks to detect granular changes
+- **Targeted upserts**: Updating only modified vectors in Pinecone/vector databases
+- **Deletion handling**: Safely removing old vectors without orphaning data
+- **Version snapshots**: Creating rollback points before risky updates
+- **Rollback mechanisms**: Recovering from failed updates using saved state
+
+## After Completing This Module
+
+You will be able to:
+- Run change detection on document corpora to identify what needs updating
+- Update vector indexes incrementally, saving time and cost
+- Rollback safely when updates fail using version snapshots
+- Operate offline in demo mode without API keys (change detection works locally)
+- Make informed decisions about when incremental indexing is appropriate vs. full re-indexing
+
+## Context in Track
+
+This is **Level 2, Module 5.1: Incremental Indexing & Updates** in the Production Data Management track. You're learning how to manage evolving data in production RAG systems. This module feeds directly into M5.2 (Batch Processing Optimization) where you'll handle larger-scale updates, and later into the A/B Testing modules (M8.2) where you'll evaluate incremental vs. full indexing strategies with real metrics.
+
+---
+
 ## Overview
 
 This module implements incremental indexing for vector databases, avoiding costly full re-indexing when only small portions of your document corpus change. Instead of re-processing 10,000 documents when one changes, the system detects and updates only modified content.
@@ -38,39 +66,63 @@ OPENAI_API_KEY=your_key_here
 
 ### 3. Run Tests
 
-```bash
-# Run smoke tests
-python tests_smoke.py
-
-# Expected output:
-# ✅ All smoke tests passed!
+**Windows (PowerShell):**
+```powershell
+powershell -c "$env:PYTHONPATH='$PWD/src'; pytest tests/ -q"
 ```
+
+**Unix/Linux/Mac:**
+```bash
+PYTHONPATH="$PWD/src:$PYTHONPATH" pytest tests/ -q
+```
+
+Expected output: All tests passed ✓
 
 ### 4. Try the Examples
 
 **Option A: Python Script**
-```bash
-# Detect changes in example documents
-python l2_m5_1_incremental_indexing.py detect example_documents
 
-# Expected output:
-# 📊 Change Detection Report:
-#   New: 3
-#   Modified: 0
-#   Deleted: 0
+Windows (PowerShell):
+```powershell
+.\scripts\detect.ps1 example_documents
+```
+
+Unix/Linux/Mac:
+```bash
+./scripts/detect.sh example_documents
+```
+
+Expected output:
+```
+📊 Change Detection Report:
+  New: 3
+  Modified: 0
+  Deleted: 0
 ```
 
 **Option B: Jupyter Notebook**
 ```bash
-jupyter notebook L2_M5_1_Incremental_Indexing.ipynb
+jupyter notebook notebooks/L2_M5_1_Incremental_Indexing.ipynb
 ```
 
 **Option C: REST API**
-```bash
-# Start API server
-python app.py
 
-# In another terminal, test endpoints:
+Windows (PowerShell):
+```powershell
+.\scripts\run_api.ps1
+# Or manually:
+powershell -c "$env:PYTHONPATH='$PWD/src'; uvicorn app:app --reload"
+```
+
+Unix/Linux/Mac:
+```bash
+./scripts/run_api.sh
+# Or manually:
+PYTHONPATH="$PWD/src:$PYTHONPATH" uvicorn app:app --reload
+```
+
+Test endpoints in another terminal:
+```bash
 curl http://localhost:8000/health
 
 curl -X POST http://localhost:8000/detect-changes \
@@ -281,23 +333,69 @@ python l2_m5_1_incremental_indexing.py rollback <snapshot_id>
 - **Cause**: Index not refreshed yet (eventual consistency)
 - **Fix**: Wait 1-2 seconds or use index.describe_index_stats()
 
+## Environment Variables
+
+All configuration is managed through environment variables in `.env`:
+
+| Variable | Purpose |
+|----------|---------|
+| `PINECONE_API_KEY` | Pinecone authentication key for vector database access |
+| `PINECONE_ENVIRONMENT` | Pinecone deployment region (e.g., us-west1-gcp) |
+| `PINECONE_INDEX_NAME` | Name of the Pinecone index to use (default: incremental-index) |
+| `OPENAI_API_KEY` | OpenAI API key for generating text embeddings |
+| `OPENAI_MODEL` | Embedding model to use (default: text-embedding-3-small) |
+| `STATE_FILE` | Path to JSON file storing document checksums (default: index_state.json) |
+| `VERSIONS_DIR` | Directory for version snapshots (default: index_versions) |
+| `MAX_VERSIONS` | Number of snapshots to retain (default: 10) |
+| `BATCH_SIZE` | Vectors per upsert/delete batch (default: 100) |
+| `CHUNK_SIZE` | Characters per document chunk (default: 500) |
+| `CHUNK_OVERLAP` | Character overlap between chunks (default: 50) |
+| `ENABLE_METRICS` | Enable Prometheus metrics endpoint (default: false) |
+| `METRICS_PORT` | Port for metrics server (default: 9090) |
+
+## Mock Mode (Offline Operation)
+
+**The module works without API keys** by automatically falling back to mock mode:
+
+- **Change detection**: ✓ Runs completely offline using local checksums
+- **Vector embeddings**: Uses deterministic mock function (no API calls)
+- **Vector database**: Uses in-memory mock index (no Pinecone connection)
+
+This enables:
+- Learning the concepts without API costs
+- Running tests in CI/CD without credentials
+- Developing and debugging locally
+
+When API keys are present, the system automatically switches to live mode with real Pinecone and OpenAI services.
+
 ## Project Structure
 
 ```
 ccc_l2_aug_practical/
-├── l2_m5_1_incremental_indexing.py  # Core implementation
-├── config.py                         # Configuration management
-├── app.py                            # FastAPI REST API
-├── requirements.txt                  # Dependencies
-├── .env.example                      # Environment template
-├── tests_smoke.py                    # Smoke tests
-├── README.md                         # This file
-├── L2_M5_1_Incremental_Indexing.ipynb # Tutorial notebook
-├── example_documents/                # Sample documents
+├── src/
+│   └── m5_1_incremental_indexing/   # Core package
+│       ├── __init__.py              # Package exports
+│       ├── core.py                  # Business logic
+│       └── config.py                # Configuration
+├── tests/
+│   ├── conftest.py                  # Pytest setup
+│   └── test_smoke.py                # Smoke tests
+├── scripts/
+│   ├── run_api.ps1/.sh             # API launcher
+│   └── detect.ps1/.sh              # CLI wrapper
+├── notebooks/
+│   └── L2_M5_1_Incremental_Indexing.ipynb # Tutorial
+├── example_documents/               # Sample data
 │   ├── doc1_vector_databases.txt
 │   ├── doc2_embeddings.txt
 │   └── doc3_incremental_indexing.txt
-└── example_data.json                 # Dataset metadata
+├── app.py                           # FastAPI REST API
+├── setup.py                         # Package installer
+├── requirements.txt                 # Dependencies
+├── .env.example                     # Environment template
+├── .gitignore                       # Git exclusions
+├── example_data.json                # Dataset metadata
+└── README.md                        # This file
 ```
 
 ## API Reference
