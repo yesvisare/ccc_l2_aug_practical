@@ -8,7 +8,7 @@ Provides REST API endpoints for:
 - Migration management
 - Cost estimation
 
-No business logic here - all functionality imported from l2_m4_vector_index_management.py
+No business logic here - all functionality imported from m5_4_vector_index package.
 """
 
 from fastapi import FastAPI, HTTPException, BackgroundTasks
@@ -18,8 +18,8 @@ from typing import Optional, List, Dict, Any
 import logging
 from datetime import datetime
 
-from config import get_clients, Config, validate_config
-from l2_m4_vector_index_management import (
+from m5_4_vector_index.config import get_clients, Config, validate_config
+from m5_4_vector_index.core import (
     IndexBackupManager,
     BlueGreenDeploymentManager,
     IndexMigrationManager,

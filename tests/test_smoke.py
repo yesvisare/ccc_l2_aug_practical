@@ -8,14 +8,9 @@ Minimal tests to verify:
 """
 
 import pytest
-import sys
-import os
 
-# Add parent directory to path
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-
-from config import Config, validate_config, get_clients
-from l2_m4_vector_index_management import (
+from m5_4_vector_index.config import Config, validate_config, get_clients
+from m5_4_vector_index.core import (
     IndexBackupManager,
     BlueGreenDeploymentManager,
     IndexMigrationManager,
