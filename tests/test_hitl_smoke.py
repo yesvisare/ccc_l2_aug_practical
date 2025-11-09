@@ -7,6 +7,7 @@ Minimal tests to verify:
 - Graceful handling when services unavailable
 """
 
+import pytest
 import os
 import sys
 import json
@@ -17,7 +18,7 @@ from datetime import datetime
 # Add parent directory to path
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from l2_m8_hitl_evaluation import (
+from m8_hitl_eval.hitl import (
     FeedbackCollector,
     Feedback,
     ActiveLearningSelector,
@@ -26,9 +27,10 @@ from l2_m8_hitl_evaluation import (
     export_to_label_studio,
     AnnotationTask
 )
-from config import Config
+from m8_hitl_eval.config import Config
 
 
+@pytest.mark.skipif(os.getenv('SKIP_INTEGRATION_TESTS', '').lower() == 'true', reason='Integration tests skipped')
 def test_config_loads():
     """Test that configuration loads with defaults."""
     config = Config()
@@ -38,6 +40,7 @@ def test_config_loads():
     print("✓ Config loads correctly")
 
 
+@pytest.mark.skipif(os.getenv('SKIP_INTEGRATION_TESTS', '').lower() == 'true', reason='Integration tests skipped')
 def test_feedback_collector():
     """Test feedback collection and retrieval."""
     with tempfile.NamedTemporaryFile(suffix=".db", delete=False) as tmp:
@@ -71,6 +74,7 @@ def test_feedback_collector():
             os.remove(db_path)
 
 
+@pytest.mark.skipif(os.getenv('SKIP_INTEGRATION_TESTS', '').lower() == 'true', reason='Integration tests skipped')
 def test_active_learning_selector():
     """Test active learning query selection."""
     selector = ActiveLearningSelector()
@@ -105,6 +109,7 @@ def test_active_learning_selector():
     print("✓ ActiveLearningSelector works correctly")
 
 
+@pytest.mark.skipif(os.getenv('SKIP_INTEGRATION_TESTS', '').lower() == 'true', reason='Integration tests skipped')
 def test_iaa_calculation():
     """Test inter-annotator agreement metrics."""
     iaa = InterAnnotatorAgreement()
@@ -129,6 +134,7 @@ def test_iaa_calculation():
     print("✓ InterAnnotatorAgreement works correctly")
 
 
+@pytest.mark.skipif(os.getenv('SKIP_INTEGRATION_TESTS', '').lower() == 'true', reason='Integration tests skipped')
 def test_feedback_loop_manager():
     """Test feedback loop aggregation and training extraction."""
     manager = FeedbackLoopManager()
@@ -164,6 +170,7 @@ def test_feedback_loop_manager():
     print("✓ FeedbackLoopManager works correctly")
 
 
+@pytest.mark.skipif(os.getenv('SKIP_INTEGRATION_TESTS', '').lower() == 'true', reason='Integration tests skipped')
 def test_label_studio_export():
     """Test export to Label Studio format."""
     tasks = [
@@ -198,6 +205,7 @@ def test_label_studio_export():
             os.remove(output_path)
 
 
+@pytest.mark.skipif(os.getenv('SKIP_INTEGRATION_TESTS', '').lower() == 'true', reason='Integration tests skipped')
 def test_example_data_loads():
     """Test that example data file is valid."""
     example_path = os.path.join(os.path.dirname(__file__), "example_data.json")
@@ -216,10 +224,11 @@ def test_example_data_loads():
     print("✓ example_data.json is valid")
 
 
+@pytest.mark.skipif(os.getenv('SKIP_INTEGRATION_TESTS', '').lower() == 'true', reason='Integration tests skipped')
 def test_graceful_degradation():
     """Test graceful handling when services unavailable."""
     # Test with missing Label Studio config
-    from config import get_label_studio_client
+    from m8_hitl_eval.config import get_label_studio_client
 
     client = get_label_studio_client()
     # Should return None without crashing

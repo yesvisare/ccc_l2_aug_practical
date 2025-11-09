@@ -1,0 +1,14 @@
+__pycache__/
+.pytest_cache/
+.ipynb_checkpoints/
+.env
+.venv/
+*.pyc
+.DS_Store
+*.db
+*.sqlite
+*.sqlite3
+demo_feedback.db
+feedback.db
+label_studio_export.json
+label_studio_tasks.json

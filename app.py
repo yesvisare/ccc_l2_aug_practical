@@ -16,7 +16,7 @@ from datetime import datetime
 import numpy as np
 import logging
 
-from l2_m8_hitl_evaluation import (
+from m8_hitl_eval.hitl import (
     FeedbackCollector,
     Feedback,
     ActiveLearningSelector,
@@ -24,7 +24,7 @@ from l2_m8_hitl_evaluation import (
     FeedbackLoopManager,
     export_to_label_studio
 )
-from config import Config
+from m8_hitl_eval.config import Config
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
