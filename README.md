@@ -2,6 +2,24 @@
 
 Reduce false positives by 80-90% through statistical anomaly detection, alert aggregation, and automated remediation.
 
+## Purpose
+
+Create an intelligent alerting workspace that fuses technical telemetry (latency, errors, token spikes) with business signals (user impact, cohort, revenue at risk) to cut noise and route action.
+
+## Concepts Covered
+
+Signal scoring, deduplication, user‑impact tagging, escalation policy, Prometheus/exporters, offline simulation.
+
+## After Completing
+
+You can score/prioritize alerts, expose them via API/Prometheus, and validate routing with smoke tests.
+
+## Context in Track
+
+L2 observability → actionable operations; this module prepares L3 scale‑out and SRE integrations.
+
+---
+
 ## Overview
 
 Traditional threshold-based alerts (e.g., "alert if latency > 2s") create alert fatigue with 90% false positive rates. This module implements intelligent alerting that:
@@ -40,22 +58,61 @@ cp .env.example .env
 # PAGERDUTY_API_KEY=your_key_here
 ```
 
+#### Environment Variables
+
+| Variable | Purpose |
+|----------|---------|
+| `PROMETHEUS_URL` | Prometheus server endpoint for metrics |
+| `PROMETHEUS_METRIC_NAME` | Metric name to monitor (e.g., latency) |
+| `PAGERDUTY_API_KEY` | PagerDuty API authentication key |
+| `PAGERDUTY_SERVICE_ID` | PagerDuty service identifier for routing |
+| `PAGERDUTY_INTEGRATION_KEY` | Integration key for incident creation |
+| `ANOMALY_STD_THRESHOLD` | Sigma deviation threshold (default 3.0) |
+| `ANOMALY_INTERVAL_WIDTH` | Confidence interval width (default 0.997) |
+| `ANOMALY_SEASONALITY_MODE` | Seasonality mode: multiplicative or additive |
+| `ALERT_AGGREGATION_WINDOW` | Time window in seconds for grouping alerts |
+| `ALERT_AGGREGATION_ENABLED` | Enable/disable alert aggregation |
+| `AUTO_REMEDIATION_ENABLED` | Enable/disable automatic runbook execution |
+| `RUNBOOK_PATH` | Directory path for runbook scripts |
+| `LOG_LEVEL` | Logging verbosity (INFO, DEBUG, WARNING, ERROR) |
+| `ENVIRONMENT` | Deployment environment (development, production) |
+
 ### 3. Run Examples
 
-```bash
-# CLI examples (works without external services)
-python l2_m7_intelligent_alerting.py
-
-# Start FastAPI server
-python app.py
-# Access API docs: http://localhost:8000/docs
+**Windows (PowerShell):**
+```powershell
+# Run API server
+powershell -c "$env:PYTHONPATH='$PWD'; uvicorn app:app --reload"
 
 # Run tests
-pytest tests_smoke.py -v
+powershell -c "$env:PYTHONPATH='$PWD'; pytest -q"
+
+# Using scripts
+.\scripts\run_api.ps1
+.\scripts\run_tests.ps1
+```
+
+**Unix/Linux:**
+```bash
+# Run API server
+export PYTHONPATH=$PWD
+uvicorn app:app --reload
+
+# Run tests
+export PYTHONPATH=$PWD
+pytest -q
+
+# Using scripts
+./scripts/run_api.sh
+./scripts/run_tests.sh
 
 # Explore Jupyter notebook
-jupyter notebook L2_M7_Intelligent_Alerting.ipynb
+jupyter notebook notebooks/L2_M7_Intelligent_Alerting.ipynb
 ```
+
+**Access:**
+- API docs: http://localhost:8080/docs
+- Health check: http://localhost:8080/health
 
 ## How It Works
 
@@ -189,7 +246,7 @@ pytest tests/runbooks/ --prod-dry-run
 
 ### Train Model
 ```bash
-POST /train
+POST /api/train
 {
   "metric_name": "http_request_duration_seconds",
   "baseline_days": 7,
@@ -199,7 +256,7 @@ POST /train
 
 ### Detect Anomaly
 ```bash
-POST /detect
+POST /api/detect
 {
   "timestamp": "2025-11-07T10:00:00Z",
   "value": 2.5
@@ -208,7 +265,7 @@ POST /detect
 
 ### Ingest Alert
 ```bash
-POST /alerts/ingest
+POST /api/alerts/ingest
 {
   "id": "alert_123",
   "metric": "latency",
@@ -221,12 +278,12 @@ POST /alerts/ingest
 
 ### Aggregate Alerts
 ```bash
-POST /alerts/aggregate
+POST /api/alerts/aggregate
 ```
 
 ### Execute Runbook
 ```bash
-POST /runbook/execute
+POST /api/runbook/execute
 {
   "trigger": "cache_full",
   "parameters": {"percentage": 20}

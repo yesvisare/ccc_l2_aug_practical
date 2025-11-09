@@ -4,6 +4,7 @@ Smoke tests for Module 7.4: Intelligent Alerting.
 Basic tests to verify configuration, core functionality, and graceful degradation.
 """
 
+import os
 import pytest
 from datetime import datetime, timedelta
 import pandas as pd
@@ -18,6 +19,17 @@ from src.m7_intelligent_alerting_workspace.core import (
     Alert,
     Incident,
     load_example_data
+)
+
+# Skip markers for optional external services
+skip_redis = pytest.mark.skipif(
+    os.getenv("REDIS_ENABLED", "false").lower() == "true" and not os.getenv("REDIS_HOST"),
+    reason="Redis not configured"
+)
+
+skip_clickhouse = pytest.mark.skipif(
+    os.getenv("CLICKHOUSE_ENABLED", "false").lower() == "true" and not os.getenv("CLICKHOUSE_HOST"),
+    reason="ClickHouse not configured"
 )
 
 
