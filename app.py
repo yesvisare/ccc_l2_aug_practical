@@ -15,17 +15,7 @@ from typing import Optional, List, Dict, Any
 import logging
 import time
 
-from config import Config, get_rbac_manager, has_pinecone
-
-# Import from module with hyphens needs special handling
-import sys
-import importlib.util
-spec = importlib.util.spec_from_file_location("l2_m6_rbac", "/home/user/ccc_l2_aug_practical/l2_m6_rbac_multi-level_access.py")
-rbac_module = importlib.util.module_from_spec(spec)
-spec.loader.exec_module(rbac_module)
-User = rbac_module.User
-RoleName = rbac_module.RoleName
-AccessLevel = rbac_module.AccessLevel
+from m6_rbac import Config, get_rbac_manager, has_pinecone, User, RoleName, AccessLevel
 
 # Configure logging
 logging.basicConfig(level=Config.LOG_LEVEL)
