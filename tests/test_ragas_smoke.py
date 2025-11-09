@@ -355,3 +355,10 @@ def test_example_data_loads():
 if __name__ == "__main__":
     # Run tests with pytest
     pytest.main([__file__, "-v"])
+
+
+@pytest.fixture(autouse=True)
+def _skip_if_no_infra():
+    """Auto-skip all tests when SKIP_INTEGRATION_TESTS=true."""
+    if os.getenv('SKIP_INTEGRATION_TESTS', '').lower() == 'true':
+        pytest.skip('Integration tests skipped via SKIP_INTEGRATION_TESTS=true')
