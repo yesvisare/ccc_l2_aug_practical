@@ -2,6 +2,31 @@
 
 Production-ready data quality validation for RAG systems. Prevents indexing 30-40% low-quality content that wastes storage, compute, and degrades retrieval accuracy.
 
+## Purpose
+
+This module enforces input/document quality for RAG pipelines before indexing. It validates chunk schema, detects nulls/type mismatches, checks range/length bounds, identifies duplicates, and guards chunk size and embedding length. By applying quality gates early, we prevent bad data from poisoning the vector database and degrading retrieval accuracy.
+
+## Concepts Covered
+
+- **Schema Checks**: Validate required fields and data types for chunks and metadata
+- **Null/Type/Format Validation**: Ensure text content is non-empty and properly encoded
+- **Range/Length Bounds**: Enforce optimal chunk sizes (200-800 characters) and detect outliers
+- **Duplicate Detection**: Identify exact and near-duplicate chunks using MinHash LSH (O(n) complexity)
+- **Referential Checks**: Validate metadata consistency (source, date, section fields)
+- **Chunk-Size Guards**: Prevent oversized or undersized chunks from entering the pipeline
+- **Metrics & Reporting**: Track quality pass rates, deduplication rates, and drift scores for monitoring
+
+## After Completing This Module
+
+- **Run batch validation locally**: Process example data without any external API keys or services
+- **Read pass/fail metrics**: View quality scores, deduplication results, and drift detection summaries in console output
+- **Export validation reports**: Generate local reports with quality statistics and failure reasons
+- **Operate entirely offline**: All validation runs locally on your machine with no cloud dependencies
+
+## Context in Track (L2: Production Data Management)
+
+This module (M5.3) is part of Level 2's Production Data Management track. It follows **M5.1 (Incremental Indexing)** and **M5.2 (Data Pipelines & Orchestration)**, adding quality gates before data enters the vector index. M5.3 prevents bad data from poisoning your RAG system by filtering low-quality chunks, removing duplicates, and detecting data drift. The validated data then flows to downstream modules for indexing and evaluation, ensuring only high-quality content reaches production.
+
 ## Overview
 
 This module implements three quality pillars:
@@ -37,23 +62,48 @@ cp .env.example .env
 
 ### Quick Test
 
+**Windows (PowerShell):**
+```powershell
+# Run smoke tests
+powershell -c "$env:PYTHONPATH='src;.'; pytest tests/ -q"
+
+# Run API server
+powershell -c "$env:PYTHONPATH='src;.'; uvicorn app:app --reload"
+
+# Run validation demo
+.\scripts\run_validate.ps1
+```
+
+**Linux/Mac:**
 ```bash
 # Run smoke tests
-pytest tests_smoke.py -v
+PYTHONPATH=src:. pytest tests/ -v
 
-# Run CLI demo
-python l2_m3_dataquality_validation.py
+# Run API server
+PYTHONPATH=src:. uvicorn app:app --reload
 
-# Start API server
-python app.py
-# Visit http://localhost:8000/docs for interactive API docs
+# Run validation demo
+./scripts/run_validate.sh
+```
+
+**Using Scripts:**
+```bash
+# Windows
+.\scripts\run_tests.ps1
+.\scripts\run_api.ps1
+.\scripts\run_validate.ps1
+
+# Linux/Mac
+./scripts/run_tests.sh
+./scripts/run_api.sh
+./scripts/run_validate.sh
 ```
 
 ### Basic Usage
 
 **Quality Scoring:**
 ```python
-from l2_m3_dataquality_validation import ChunkQualityScorer, ChunkMetadata
+from m5_3_data_quality import ChunkQualityScorer, ChunkMetadata
 
 scorer = ChunkQualityScorer(min_score=70.0)
 
@@ -68,7 +118,7 @@ print(f"Score: {score.total_score}, Passed: {score.passed}")
 
 **Duplicate Detection:**
 ```python
-from l2_m3_dataquality_validation import DuplicateDetector
+from m5_3_data_quality import DuplicateDetector
 
 detector = DuplicateDetector(threshold=0.85)
 
@@ -85,7 +135,7 @@ print(f"Unique: {len(unique_ids)}, Duplicates: {len(dup_info)}")
 
 **Drift Detection:**
 ```python
-from l2_m3_dataquality_validation import DataDriftDetector
+from m5_3_data_quality import DataDriftDetector
 
 detector = DataDriftDetector(significance_level=0.05, drift_threshold=0.15)
 
@@ -147,6 +197,43 @@ curl -X POST http://localhost:8000/pipeline/validate \
     "similarity_threshold": 0.85
   }'
 ```
+
+## Environment Variables
+
+Configure the module via `.env` file (copy from `.env.example`). All variables are **optional** - the module runs offline without any external services.
+
+### Quality Scoring
+- `MIN_QUALITY_SCORE` (default: 70.0) - Minimum quality score threshold (0-100) for chunks to pass validation
+- `OPTIMAL_LENGTH_MIN` (default: 200) - Minimum optimal chunk length in characters
+- `OPTIMAL_LENGTH_MAX` (default: 800) - Maximum optimal chunk length in characters
+
+### Duplicate Detection
+- `SIMILARITY_THRESHOLD` (default: 0.85) - Jaccard similarity threshold for near-duplicate detection (0-1)
+- `NUM_PERMUTATIONS` (default: 128) - Number of MinHash permutations (higher = more accurate but slower)
+
+### Data Drift Detection
+- `SIGNIFICANCE_LEVEL` (default: 0.05) - P-value threshold for statistical significance in K-S test
+- `DRIFT_THRESHOLD` (default: 0.15) - Minimum distribution shift to flag as drift (0-1, represents 15%)
+- `MIN_DRIFT_SAMPLES` (default: 50) - Minimum samples required for drift detection
+
+### Alert Thresholds (for monitoring)
+- `ALERT_MIN_PASS_RATE` (default: 60.0) - Alert if quality pass rate drops below this percentage
+- `ALERT_MAX_DRIFT_SCORE` (default: 0.25) - Alert if drift score exceeds this threshold
+- `ALERT_MAX_DEDUP_RATE` (default: 25.0) - Alert if deduplication rate exceeds this percentage
+- `ALERT_MAX_PIPELINE_MINUTES` (default: 45) - Alert if pipeline duration exceeds this in minutes
+
+### Processing (optional optimization)
+- `ENABLE_MULTIPROCESSING` (default: false) - Enable parallel processing for quality scoring
+- `NUM_WORKERS` (default: 8) - Number of worker processes for multiprocessing
+- `BATCH_SIZE` (default: 1000) - Batch size for processing chunks
+
+### External Services (optional, not required for offline operation)
+- `GRAFANA_API_KEY` - Grafana API key for dashboard integration (optional)
+- `GRAFANA_URL` - Grafana instance URL (optional)
+- `AIRFLOW_API_KEY` - Airflow API key for pipeline orchestration (optional)
+- `AIRFLOW_URL` - Airflow instance URL (optional)
+
+**Offline Behavior:** The module runs entirely offline without any API keys. It processes `example_data.json` locally, outputs validation metrics to console, and can export reports to local files. No cloud services are required.
 
 ## How It Works
 

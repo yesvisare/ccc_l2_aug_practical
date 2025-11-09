@@ -2,7 +2,7 @@
 FastAPI application for M5.3: Data Quality & Validation
 
 Provides REST API endpoints for quality scoring, duplicate detection, and drift monitoring.
-No business logic in this file - imports and calls functions from l2_m3_dataquality_validation.py
+No business logic in this file - imports and calls functions from m5_3_data_quality package.
 """
 
 import logging
