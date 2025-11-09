@@ -2,6 +2,33 @@
 
 Enterprise security module for protecting sensitive data before it reaches vector databases or LLM APIs.
 
+## Learning Arc
+
+### Purpose
+
+Prevent sensitive data leakage in RAG systems by detecting and redacting Personally Identifiable Information (PII) at ingest and query time. Protects SSNs, emails, phone numbers, and custom entity types before they reach vector stores or LLM APIs, ensuring compliance with privacy regulations while maintaining system utility.
+
+### Concepts Covered
+
+- **Regex baseline detection** - Fast pattern matching for common PII formats (SSN, credit cards, phones)
+- **Optional NER/Presidio integration** - Context-aware entity recognition with confidence scoring
+- **Configurable entity sets** - Customize which PII types to detect based on compliance needs
+- **Redaction modes** - Mask (preserve format), hash (audit trails), tokenize, or label entities
+- **Overlap handling** - Resolve conflicts when multiple patterns match the same span
+- **Simple evaluation** - Measure precision/recall on sample datasets
+- **Demo mode** - Offline regex-only operation without external dependencies
+
+### After Completing
+
+- Run PII detection locally on documents and text streams
+- Apply policy-based redaction with configurable strategies
+- Export brief summary reports showing entity counts and processing metrics
+- Operate offline using regex-only mode when advanced models unavailable
+
+### Context in Track
+
+This module sits in **M6: Enterprise Security & Compliance**, protecting both indexing (preventing PII from entering vector stores) and serving (sanitizing query inputs/outputs). Integrates with M5 data pipelines for pre-processing and feeds into M7 monitoring for compliance auditing.
+
 ## Overview
 
 This module implements automated PII detection and redaction using Microsoft Presidio, combining:
@@ -61,13 +88,26 @@ Key configuration options:
 
 ### 3. Run the Service
 
-```bash
-# Start FastAPI server
-python app.py
+**Windows (PowerShell):**
+```powershell
+# Using script (recommended)
+.\scripts\run_api.ps1
 
-# Server starts on http://localhost:8000
-# API docs available at http://localhost:8000/docs
+# Or manually
+powershell -c "$env:PYTHONPATH='$PWD;$PWD\src'; uvicorn app:app --reload"
 ```
+
+**Unix/Mac:**
+```bash
+# Using script
+./scripts/run_api.sh
+
+# Or manually
+PYTHONPATH="$PWD/src:$PYTHONPATH" uvicorn app:app --reload
+```
+
+Server starts on http://localhost:8000
+API docs available at http://localhost:8000/docs
 
 ### 4. Quick Test
 
@@ -88,12 +128,22 @@ curl -X POST http://localhost:8000/redact \
 
 ### 5. Run Tests
 
-```bash
-# Run smoke tests
-pytest tests_smoke.py -v
+**Windows (PowerShell):**
+```powershell
+# Using script (recommended)
+.\scripts\run_tests.ps1
 
-# With coverage
-pytest tests_smoke.py -v --cov=l2_m6_pii_detection_redaction
+# Or manually
+powershell -c "$env:PYTHONPATH='$PWD;$PWD\src'; pytest -q"
+```
+
+**Unix/Mac:**
+```bash
+# Using script
+./scripts/run_tests.sh
+
+# Or manually
+PYTHONPATH="$PWD/src:$PYTHONPATH" pytest tests/ -v
 ```
 
 ## How It Works

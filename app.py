@@ -14,13 +14,18 @@ from fastapi import FastAPI, HTTPException, status
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 
-from m6_pii_detection_redaction.config import config
+from m6_pii_detection_redaction.config import config, load_config
 from m6_pii_detection_redaction import (
     PIIDetector,
     RedactionStrategy,
     CustomRecognizerFactory,
     PRESIDIO_AVAILABLE,
-    setup_logging
+    setup_logging,
+    # Simple API
+    detect_pii,
+    redact_text,
+    load_policy,
+    RedactionMode,
 )
 
 # Setup logging

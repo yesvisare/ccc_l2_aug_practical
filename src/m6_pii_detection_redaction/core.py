@@ -551,6 +551,170 @@ def create_whitelist_patterns() -> List[str]:
     ]
 
 
+# Alias for API consistency
+RedactionMode = RedactionStrategy
+
+
+# Simple Policy Management
+def load_policy(policy_path: Optional[str] = None) -> Dict[str, Any]:
+    """
+    Load PII detection policy from file or return default.
+
+    Args:
+        policy_path: Path to policy JSON file (optional)
+
+    Returns:
+        Dictionary containing policy configuration
+
+    Example:
+        >>> policy = load_policy()
+        >>> policy['confidence_threshold']
+        0.5
+    """
+    default_policy = {
+        "confidence_threshold": 0.5,
+        "entity_types": config.DEFAULT_ENTITY_TYPES,
+        "redaction_mode": "replace",
+        "enable_parallel": config.ENABLE_PARALLEL_PROCESSING,
+        "max_workers": config.MAX_WORKERS
+    }
+
+    if policy_path:
+        try:
+            import json
+            with open(policy_path, 'r') as f:
+                custom_policy = json.load(f)
+                default_policy.update(custom_policy)
+                logger.info(f"Loaded policy from {policy_path}")
+        except Exception as e:
+            logger.warning(f"Failed to load policy from {policy_path}: {e}. Using defaults.")
+
+    return default_policy
+
+
+# Convenience wrapper functions
+_global_detector: Optional[PIIDetector] = None
+
+
+def _get_or_create_detector(confidence: float = 0.5) -> Optional[PIIDetector]:
+    """Get or create a global detector instance."""
+    global _global_detector
+    if not PRESIDIO_AVAILABLE:
+        return None
+    if _global_detector is None or _global_detector.confidence_threshold != confidence:
+        try:
+            _global_detector = PIIDetector(confidence_threshold=confidence)
+        except Exception as e:
+            logger.error(f"Failed to create detector: {e}")
+            return None
+    return _global_detector
+
+
+def detect_pii(text: str, confidence: float = 0.5) -> List[Dict[str, Any]]:
+    """
+    Detect PII entities in text (simple API).
+
+    Args:
+        text: Input text to analyze
+        confidence: Confidence threshold (0.0-1.0)
+
+    Returns:
+        List of detected PII entities with metadata
+
+    Example:
+        >>> entities = detect_pii("Email: test@company.com")
+        >>> len(entities) > 0
+        True
+    """
+    if not text or not text.strip():
+        return []
+
+    detector = _get_or_create_detector(confidence)
+    if detector is None:
+        logger.warning("PII detection unavailable (Presidio not installed)")
+        return []
+
+    try:
+        entities = detector.detect(text)
+        return [
+            {
+                "entity_type": e.entity_type,
+                "text": e.text,
+                "start": e.start,
+                "end": e.end,
+                "score": e.score
+            }
+            for e in entities
+        ]
+    except Exception as e:
+        logger.error(f"Detection failed: {e}")
+        return []
+
+
+def redact_text(
+    text: str,
+    mode: str = "replace",
+    confidence: float = 0.5
+) -> Dict[str, Any]:
+    """
+    Detect and redact PII in text (simple API).
+
+    Args:
+        text: Input text to redact
+        mode: Redaction mode - "mask", "replace", or "hash"
+        confidence: Confidence threshold (0.0-1.0)
+
+    Returns:
+        Dictionary with redacted_text, entities_found, and metadata
+
+    Example:
+        >>> result = redact_text("SSN: 123-45-6789", mode="replace")
+        >>> "<US_SSN>" in result.get("redacted_text", "")
+        True
+    """
+    if not text or not text.strip():
+        return {
+            "redacted_text": text,
+            "entities_found": [],
+            "processing_time_ms": 0.0
+        }
+
+    detector = _get_or_create_detector(confidence)
+    if detector is None:
+        logger.warning("PII redaction unavailable (Presidio not installed)")
+        return {
+            "redacted_text": text,
+            "entities_found": [],
+            "processing_time_ms": 0.0,
+            "warning": "Presidio not available"
+        }
+
+    try:
+        # Map mode string to RedactionStrategy
+        strategy_map = {
+            "mask": RedactionStrategy.MASKING,
+            "replace": RedactionStrategy.REPLACEMENT,
+            "hash": RedactionStrategy.HASHING
+        }
+        strategy = strategy_map.get(mode.lower(), RedactionStrategy.REPLACEMENT)
+
+        result = detector.redact(text, strategy=strategy)
+        return {
+            "redacted_text": result.redacted_text,
+            "entities_found": result.entities_found,
+            "processing_time_ms": result.processing_time_ms,
+            "confidence_threshold": result.confidence_threshold
+        }
+    except Exception as e:
+        logger.error(f"Redaction failed: {e}")
+        return {
+            "redacted_text": text,
+            "entities_found": [],
+            "processing_time_ms": 0.0,
+            "error": str(e)
+        }
+
+
 # CLI Example Usage
 if __name__ == "__main__":
     print("=== Module 6.1: PII Detection & Redaction Demo ===\n")

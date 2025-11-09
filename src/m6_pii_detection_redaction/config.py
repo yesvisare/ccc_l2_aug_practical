@@ -98,5 +98,15 @@ def get_clients():
     return clients if clients else None
 
 
+def load_config() -> Config:
+    """
+    Load and return the configuration instance.
+
+    Returns:
+        Config instance with loaded environment variables
+    """
+    return config
+
+
 # Export configuration instance
 config = Config()

@@ -15,9 +15,14 @@ from .core import (
     setup_logging,
     PIIMaskingFilter,
     PRESIDIO_AVAILABLE,
+    # Simple API
+    detect_pii,
+    redact_text,
+    load_policy,
+    RedactionMode,
 )
 
-from .config import config, Config, get_clients
+from .config import config, Config, get_clients, load_config
 
 __all__ = [
     # Main classes
@@ -34,10 +39,17 @@ __all__ = [
     "create_whitelist_patterns",
     "setup_logging",
 
+    # Simple API
+    "detect_pii",
+    "redact_text",
+    "load_policy",
+    "RedactionMode",
+
     # Configuration
     "config",
     "Config",
     "get_clients",
+    "load_config",
 
     # Constants
     "PRESIDIO_AVAILABLE",

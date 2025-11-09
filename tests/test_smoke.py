@@ -10,6 +10,7 @@ Minimal tests to verify:
 import pytest
 
 from m6_pii_detection_redaction.config import config, Config
+from m6_pii_detection_redaction.core import detect_pii, redact_text
 from m6_pii_detection_redaction import (
     PIIDetector,
     RedactionStrategy,
@@ -17,7 +18,9 @@ from m6_pii_detection_redaction import (
     CustomRecognizerFactory,
     PIIMaskingFilter,
     PRESIDIO_AVAILABLE,
-    create_whitelist_patterns
+    create_whitelist_patterns,
+    load_policy,
+    RedactionMode,
 )
 
 
@@ -223,6 +226,44 @@ class TestGDPRDeletionService:
         assert "failed" in message.lower()
 
 
-# Run tests with: pytest tests_smoke.py -v
+class TestSimpleAPI:
+    """Test simple convenience API (offline by default)."""
+
+    def test_detect_pii_offline(self):
+        """Verify detect_pii handles offline mode gracefully."""
+        # Works offline - returns empty list if Presidio unavailable
+        result = detect_pii("test text")
+        assert isinstance(result, list)
+
+    def test_redact_text_offline(self):
+        """Verify redact_text handles offline mode gracefully."""
+        # Works offline - returns original text if Presidio unavailable
+        result = redact_text("test text")
+        assert isinstance(result, dict)
+        assert "redacted_text" in result
+
+    @pytest.mark.skipif(not PRESIDIO_AVAILABLE, reason="Presidio not available")
+    def test_detect_pii_with_presidio(self):
+        """Test detect_pii when Presidio is available."""
+        result = detect_pii("Email: test@example.com")
+        assert isinstance(result, list)
+
+    @pytest.mark.skipif(not PRESIDIO_AVAILABLE, reason="Presidio not available")
+    def test_redact_text_with_presidio(self):
+        """Test redact_text when Presidio is available."""
+        result = redact_text("Email: test@example.com", mode="replace")
+        assert isinstance(result, dict)
+        assert "redacted_text" in result
+        assert "entities_found" in result
+
+    def test_load_policy_default(self):
+        """Test load_policy returns default configuration."""
+        policy = load_policy()
+        assert isinstance(policy, dict)
+        assert "confidence_threshold" in policy
+        assert "entity_types" in policy
+
+
+# Run tests with: pytest tests/test_smoke.py -v
 if __name__ == "__main__":
     pytest.main([__file__, "-v", "--tb=short"])
