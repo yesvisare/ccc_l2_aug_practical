@@ -11,8 +11,7 @@ from typing import Dict, List, Optional
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field
 
-import config
-from l2_m3_dataquality_validation import (
+from m5_3_data_quality import (
     ChunkMetadata,
     ChunkQualityScorer,
     DataDriftDetector,
@@ -20,6 +19,7 @@ from l2_m3_dataquality_validation import (
     filter_low_quality_chunks,
     remove_duplicates,
 )
+from m5_3_data_quality import config
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)

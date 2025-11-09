@@ -12,8 +12,7 @@ import os
 
 import pytest
 
-import config
-from l2_m3_dataquality_validation import (
+from m5_3_data_quality import (
     ChunkMetadata,
     ChunkQualityScorer,
     DataDriftDetector,
@@ -21,6 +20,7 @@ from l2_m3_dataquality_validation import (
     filter_low_quality_chunks,
     remove_duplicates,
 )
+from m5_3_data_quality import config
 
 
 class TestConfig:
