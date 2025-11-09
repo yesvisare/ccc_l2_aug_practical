@@ -11,13 +11,13 @@ import logging
 from datetime import datetime
 
 # Import core functionality
-from l2_m8_ragas_evaluation_framework import (
+from m8_ragas_eval.ragas_eval import (
     GoldenSetManager,
     RAGASEvaluator,
     DomainAwareEvaluator,
     EvaluationPipeline
 )
-from config import Config
+from m8_ragas_eval.config import Config
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)

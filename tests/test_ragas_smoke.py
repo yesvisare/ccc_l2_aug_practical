@@ -1,3 +1,4 @@
+import os
 """
 Smoke tests for RAGAS Evaluation Framework.
 Tests basic functionality without requiring API keys or external services.
@@ -10,14 +11,14 @@ from pathlib import Path
 # Add parent directory to path for imports
 sys.path.insert(0, str(Path(__file__).parent))
 
-from l2_m8_ragas_evaluation_framework import (
+from m8_ragas_eval.ragas_eval import (
     GoldenSetManager,
     RAGASEvaluator,
     DomainAwareEvaluator,
     ResilientEvaluator,
     EvaluationPipeline
 )
-from config import Config
+from m8_ragas_eval.config import Config
 
 
 class TestConfig:
@@ -25,6 +26,7 @@ class TestConfig:
 
     def test_config_has_required_attributes(self):
         """Test that Config has all required attributes."""
+        if os.getenv('SKIP_INTEGRATION_TESTS', '').lower() == 'true': pytest.skip('Skipped via SKIP_INTEGRATION_TESTS')
         assert hasattr(Config, 'OPENAI_API_KEY')
         assert hasattr(Config, 'OPENAI_MODEL')
         assert hasattr(Config, 'GOLDEN_SET_DIR')
@@ -33,11 +35,13 @@ class TestConfig:
 
     def test_directories_created(self):
         """Test that required directories are created."""
+        if os.getenv('SKIP_INTEGRATION_TESTS', '').lower() == 'true': pytest.skip('Skipped via SKIP_INTEGRATION_TESTS')
         assert Config.GOLDEN_SET_DIR.exists()
         assert Config.RESULTS_DIR.exists()
 
     def test_get_domain_thresholds(self):
         """Test domain thresholds retrieval."""
+        if os.getenv('SKIP_INTEGRATION_TESTS', '').lower() == 'true': pytest.skip('Skipped via SKIP_INTEGRATION_TESTS')
         thresholds = Config.get_domain_thresholds()
         assert 'faithfulness' in thresholds
         assert 'answer_relevancy' in thresholds
@@ -50,11 +54,13 @@ class TestGoldenSetManager:
 
     def test_manager_initialization(self, tmp_path):
         """Test GoldenSetManager initialization."""
+        if os.getenv('SKIP_INTEGRATION_TESTS', '').lower() == 'true': pytest.skip('Skipped via SKIP_INTEGRATION_TESTS')
         manager = GoldenSetManager(storage_path=str(tmp_path))
         assert manager.storage_path.exists()
 
     def test_create_question(self, tmp_path):
         """Test question creation."""
+        if os.getenv('SKIP_INTEGRATION_TESTS', '').lower() == 'true': pytest.skip('Skipped via SKIP_INTEGRATION_TESTS')
         manager = GoldenSetManager(storage_path=str(tmp_path))
 
         question = manager.create_question(
@@ -71,6 +77,7 @@ class TestGoldenSetManager:
 
     def test_create_question_validation(self, tmp_path):
         """Test question creation validation."""
+        if os.getenv('SKIP_INTEGRATION_TESTS', '').lower() == 'true': pytest.skip('Skipped via SKIP_INTEGRATION_TESTS')
         manager = GoldenSetManager(storage_path=str(tmp_path))
 
         # Missing question
@@ -91,6 +98,7 @@ class TestGoldenSetManager:
 
     def test_save_and_load_golden_set(self, tmp_path):
         """Test saving and loading golden sets."""
+        if os.getenv('SKIP_INTEGRATION_TESTS', '').lower() == 'true': pytest.skip('Skipped via SKIP_INTEGRATION_TESTS')
         manager = GoldenSetManager(storage_path=str(tmp_path))
 
         questions = [
@@ -121,11 +129,13 @@ class TestRAGASEvaluator:
 
     def test_evaluator_initialization(self):
         """Test RAGASEvaluator initialization."""
+        if os.getenv('SKIP_INTEGRATION_TESTS', '').lower() == 'true': pytest.skip('Skipped via SKIP_INTEGRATION_TESTS')
         evaluator = RAGASEvaluator(model_name="gpt-3.5-turbo")
         assert evaluator.model_name == "gpt-3.5-turbo"
 
     def test_evaluation_skip_without_key(self):
         """Test that evaluation gracefully skips without API key."""
+        if os.getenv('SKIP_INTEGRATION_TESTS', '').lower() == 'true': pytest.skip('Skipped via SKIP_INTEGRATION_TESTS')
         evaluator = RAGASEvaluator()
 
         results = evaluator.evaluate_system(
@@ -143,6 +153,7 @@ class TestRAGASEvaluator:
 
     def test_cost_estimation(self):
         """Test cost estimation."""
+        if os.getenv('SKIP_INTEGRATION_TESTS', '').lower() == 'true': pytest.skip('Skipped via SKIP_INTEGRATION_TESTS')
         evaluator = RAGASEvaluator(model_name="gpt-3.5-turbo")
         cost = evaluator._estimate_cost(100)
         assert 0.01 < cost < 0.10  # Should be ~$0.02 for 100 questions
@@ -153,6 +164,7 @@ class TestRAGASEvaluator:
 
     def test_generate_report(self):
         """Test report generation."""
+        if os.getenv('SKIP_INTEGRATION_TESTS', '').lower() == 'true': pytest.skip('Skipped via SKIP_INTEGRATION_TESTS')
         evaluator = RAGASEvaluator()
 
         results = {
@@ -179,6 +191,7 @@ class TestDomainAwareEvaluator:
     def test_domain_thresholds(self):
         """Test domain-specific thresholds."""
         # Compliance domain
+        if os.getenv('SKIP_INTEGRATION_TESTS', '').lower() == 'true': pytest.skip('Skipped via SKIP_INTEGRATION_TESTS')
         compliance = DomainAwareEvaluator(domain="compliance")
         assert compliance.thresholds['faithfulness'] == 0.90
 
@@ -192,6 +205,7 @@ class TestDomainAwareEvaluator:
 
     def test_threshold_evaluation(self):
         """Test evaluation against thresholds."""
+        if os.getenv('SKIP_INTEGRATION_TESTS', '').lower() == 'true': pytest.skip('Skipped via SKIP_INTEGRATION_TESTS')
         evaluator = DomainAwareEvaluator(domain="compliance")
 
         # Passing scores
@@ -223,6 +237,7 @@ class TestResilientEvaluator:
 
     def test_resilient_evaluator_initialization(self, tmp_path):
         """Test ResilientEvaluator initialization."""
+        if os.getenv('SKIP_INTEGRATION_TESTS', '').lower() == 'true': pytest.skip('Skipped via SKIP_INTEGRATION_TESTS')
         evaluator = ResilientEvaluator(
             batch_size=10,
             checkpoint_dir=str(tmp_path)
@@ -232,6 +247,7 @@ class TestResilientEvaluator:
 
     def test_batch_result_aggregation(self, tmp_path):
         """Test aggregation of batch results."""
+        if os.getenv('SKIP_INTEGRATION_TESTS', '').lower() == 'true': pytest.skip('Skipped via SKIP_INTEGRATION_TESTS')
         evaluator = ResilientEvaluator(checkpoint_dir=str(tmp_path))
 
         batch_results = [
@@ -272,6 +288,7 @@ class TestEvaluationPipeline:
 
     def test_pipeline_initialization(self, tmp_path):
         """Test EvaluationPipeline initialization."""
+        if os.getenv('SKIP_INTEGRATION_TESTS', '').lower() == 'true': pytest.skip('Skipped via SKIP_INTEGRATION_TESTS')
         pipeline = EvaluationPipeline(
             results_dir=str(tmp_path / "results")
         )
@@ -279,6 +296,7 @@ class TestEvaluationPipeline:
 
     def test_regression_detection_first_run(self, tmp_path):
         """Test regression detection on first run."""
+        if os.getenv('SKIP_INTEGRATION_TESTS', '').lower() == 'true': pytest.skip('Skipped via SKIP_INTEGRATION_TESTS')
         pipeline = EvaluationPipeline(results_dir=str(tmp_path))
 
         scores = {
@@ -294,6 +312,7 @@ class TestEvaluationPipeline:
 
     def test_regression_detection_with_baseline(self, tmp_path):
         """Test regression detection with baseline."""
+        if os.getenv('SKIP_INTEGRATION_TESTS', '').lower() == 'true': pytest.skip('Skipped via SKIP_INTEGRATION_TESTS')
         pipeline = EvaluationPipeline(results_dir=str(tmp_path))
 
         # Set baseline
@@ -320,6 +339,7 @@ class TestEvaluationPipeline:
 
 def test_example_data_loads():
     """Test that example_data.json loads correctly."""
+    if os.getenv('SKIP_INTEGRATION_TESTS', '').lower() == 'true': pytest.skip('Skipped via SKIP_INTEGRATION_TESTS')
     example_file = Path(__file__).parent / "example_data.json"
     assert example_file.exists(), "example_data.json not found"
 

@@ -262,7 +262,7 @@ class RAGASEvaluator:
             raise ValueError("All input lists must have the same length")
 
         # Check for OpenAI API key
-        from config import Config
+        from m8_ragas_eval.config import Config
         if not Config.has_openai_key():
             if skip_if_no_key:
                 logger.warning("⚠️  Skipping RAGAS evaluation (no OpenAI API key)")
