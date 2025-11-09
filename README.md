@@ -1,3 +1,66 @@
+
+# Module 7.1: Distributed Tracing with OpenTelemetry
+
+## Purpose
+
+Implement production-ready distributed tracing for RAG systems to provide request-level visibility across retrieval, reranking, and generation stages. Debug specific slow requests that aggregate metrics cannot identify.
+
+## Concepts Covered
+
+- OpenTelemetry tracer initialization with BatchSpanProcessor
+- Jaeger integration for trace visualization
+- Manual span instrumentation for RAG pipeline stages
+- Trace-log correlation using trace IDs
+- Production sampling strategies (10-50%)
+- Common failures and fixes (context propagation, storage overflow)
+- When NOT to use tracing (<100 req/day, single-service, MVP phase)
+
+## After Completing
+
+You will be able to:
+- Configure production-ready distributed tracing with OpenTelemetry
+- Instrument RAG pipelines with manual spans capturing timing and attributes
+- Visualize request flows in Jaeger UI to identify bottlenecks
+- Correlate traces with logs using trace_id for debugging
+- Understand trade-offs: 10-20ms overhead, storage scaling, cost implications
+- Make informed decisions about when to use tracing vs alternatives
+
+## Context in Track
+
+**Module 7.1: Distributed Tracing with OpenTelemetry**
+
+Part of Advanced Observability track (Module 7). Builds on:
+- Level 1 M2.3: Prometheus/Grafana monitoring (aggregate metrics)
+
+Prepares for:
+- Module 7.2: Application Performance Monitoring
+- Module 7.3: Custom Metrics
+- Module 7.4: Intelligent Alerting
+
+### Windows-first Commands
+
+```powershell
+# Run API (FastAPI with tracing)
+.\scriptsun_api.ps1
+# OR: powershell -c "$env:PYTHONPATH='$PWD/src;$PWD'; uvicorn app:app --reload"
+
+# Run tests
+.\scriptsun_tests.ps1
+# OR: powershell -c "$env:PYTHONPATH='$PWD/src;$PWD'; pytest -q"
+
+# Start Jaeger (required for tracing)
+docker run -d --name jaeger -e COLLECTOR_OTLP_ENABLED=true -p 16686:16686 -p 4317:4317 jaegertracing/all-in-one:1.51
+```
+
+### Environment Variables
+
+See `.env.example` for full configuration. Key variables:
+- `OTLP_ENDPOINT`: Jaeger OTLP endpoint (default: http://localhost:4317)
+- `SAMPLING_RATE`: Trace sampling ratio (1.0 dev, 0.1-0.5 prod)
+- `SKIP_INTEGRATION_TESTS`: Set to 'true' to skip tests requiring Jaeger
+
+---
+
 # Module 7.1: Distributed Tracing with OpenTelemetry
 
 **Request-level visibility for RAG systems using OpenTelemetry and Jaeger**
