@@ -1,0 +1,82 @@
+{
+  "sample_queries": [
+    {
+      "query": "What are the GDPR compliance requirements for data retention?",
+      "user_id": "user_123",
+      "expected_duration_ms": 800
+    },
+    {
+      "query": "How do we handle PII in customer databases?",
+      "user_id": "user_456",
+      "expected_duration_ms": 1200
+    },
+    {
+      "query": "What are the audit requirements for SOC 2 compliance?",
+      "user_id": "user_789",
+      "expected_duration_ms": 950
+    }
+  ],
+  "sample_documents": [
+    {
+      "id": "doc_1",
+      "text": "GDPR Article 17 requires data controllers to delete personal data upon request...",
+      "score": 0.92,
+      "metadata": {
+        "source": "gdpr_regulation.pdf",
+        "page": 12
+      }
+    },
+    {
+      "id": "doc_2",
+      "text": "PII should be encrypted at rest using AES-256 and in transit using TLS 1.3...",
+      "score": 0.88,
+      "metadata": {
+        "source": "security_policy.pdf",
+        "page": 5
+      }
+    },
+    {
+      "id": "doc_3",
+      "text": "SOC 2 Type II audits require continuous monitoring of access logs...",
+      "score": 0.85,
+      "metadata": {
+        "source": "soc2_guide.pdf",
+        "page": 23
+      }
+    }
+  ],
+  "memory_statistics": {
+    "baseline_mb": 100.2,
+    "current_mb": 150.5,
+    "peak_mb": 320.8,
+    "growth_mb": 50.3,
+    "allocations": 15234
+  },
+  "performance_baselines": {
+    "p50_latency_ms": 450,
+    "p95_latency_ms": 1200,
+    "p99_latency_ms": 2500,
+    "avg_cpu_percent": 45,
+    "avg_memory_mb": 180
+  },
+  "cost_estimates": {
+    "small_scale": {
+      "requests_per_day": 24000,
+      "spans_per_day": 100000,
+      "monthly_cost_usd": 51,
+      "description": "1 host, 1K req/hour"
+    },
+    "medium_scale": {
+      "requests_per_day": 240000,
+      "spans_per_day": 1000000,
+      "monthly_cost_usd": 120,
+      "description": "3-5 hosts, 10K req/hour"
+    },
+    "large_scale": {
+      "requests_per_day": 2400000,
+      "spans_per_day": 10000000,
+      "monthly_cost_usd": 800,
+      "description": "15+ hosts, 100K req/hour"
+    }
+  }
+}
